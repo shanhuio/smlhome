@@ -115,11 +115,11 @@ func (lo *Long) mulAndShift16(v uint32) {
 	p4h, p4l := hiLo(hh * v)
 
 	var t, h uint32
-	lo.Lo, t = hiLo(p1h + p2l)
-	h, t = hiLo(p2h + p3l + t)
+	t, lo.Lo = hiLo(p1h + p2l)
+	t, h = hiLo(p2h + p3l + t)
 	lo.Lo |= h << 16
-	lo.Hi, t = hiLo(p3h + p4l + t)
-	h, t = hiLo(p4h + t)
+	t, lo.Hi = hiLo(p3h + p4l + t)
+	t, h = hiLo(p4h + t)
 	lo.Hi |= h << 16
 	_ := t
 }
@@ -136,11 +136,12 @@ func (lo *Long) shift(n uint) {
 	lo.Hi >>= n
 }
 
-func (lo *Long) Udiv1e9(v uint32) {
+func (lo *Long) Udiv1e9() {
 	save := *lo
 	lo.mulAndShift16(0x5f41)
-	save.shift16()
 	save.mulAndShift16(0x8970)
+
+	lo.shift16()
 	lo.Add(&save)
 	lo.shift(29)
 }
@@ -148,4 +149,8 @@ func (lo *Long) Udiv1e9(v uint32) {
 func (lo *Long) ToWire(buf []byte) {
     binary.PutU32(buf[0:4], lo.Lo)
     binary.PutU32(buf[4:8], lo.Hi)
+}
+
+func (lo *Long) Equals(other *Long) bool {
+	return lo.Hi == other.Hi && lo.Lo == other.Lo
 }
