@@ -1,3 +1,21 @@
+func PrintInt(i int) {
+	var bs [10]byte
+	var buf bytes.Buffer
+
+	buf.Init(bs[:])
+	FprintInt(&buf, i)
+	PrintBytes(buf.Bytes())
+}
+
+func PrintUint(i uint) {
+	var bs [10]byte
+	var buf bytes.Buffer
+
+	buf.Init(bs[:])
+	FprintUint(&buf, i)
+	PrintBytes(buf.Bytes())
+}
+
 func FprintInt(w *bytes.Buffer, i int) {
     if i >= 0 {
         FprintUint(w, uint(i))

@@ -1,4 +1,4 @@
-func TimeNow(t *time.Time) {
+func Timestamp(nanos *long.Long) {
     var resp [8]byte
     n, err := Call(Clock, nil, resp[:])
     if err != 0 {
@@ -8,8 +8,6 @@ func TimeNow(t *time.Time) {
         panic()
     }
 
-    var u long.Long
-    u.Lo = binary.U32(resp[:4])
-    u.Hi = binary.U32(resp[4:])
-    t.Set(&u)
+    nanos.Lo = binary.U32(resp[:4])
+    nanos.Hi = binary.U32(resp[4:])
 }

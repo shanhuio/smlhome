@@ -78,12 +78,18 @@ func (u *Long) Sub(n *Long) uint32 {
     return u.Add(n)
 }
 
+// Iadd adds a int32.
 func (u *Long) Iadd(v int32) {
     if v < 0 {
         u.Usub(uint32(-v))
     } else {
         u.Uadd(uint32(v))
     }
+}
+
+// Imul multiplies a int32.
+func (u *Long) Imul(v int32) {
+	// TODO:
 }
 
 // Inc increases the number by one. Returns the carry.

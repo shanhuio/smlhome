@@ -5,6 +5,6 @@ func PrintStr(s string) {
     }
 }
 
-func PrintLn() {
+func Println() {
     PrintChar('\n')
 }
