@@ -1,5 +1,5 @@
 func hiLo(v uint32) (uint32, uint32) {
-	return v >> 16, v & 0xffff
+    return v >> 16, v & 0xffff
 }
 
 struct Long {
@@ -63,7 +63,7 @@ func (lo *Long) Add(n *Long) {
     t, lo.Hi = hiLo(hl1 + hl2 + t)
     t, hi = hiLo(hh1 + hh2 + t)
     lo.Hi |= (hi << 16)
-	_ := t
+    _ := t
 }
 
 func (lo *Long) Usub(v uint32) {
@@ -107,43 +107,54 @@ func (lo *Long) Ival() int32 {
 // Multiple with v and shift 16 bit to the right.
 // v must be with-in 16-bit.
 func (lo *Long) mulAndShift16(v uint32) {
-	lh, ll := hiLo(lo.Lo)
-	hh, hl := hiLo(lo.Hi)
-	p1h, _ := hiLo(ll * v)
-	p2h, p2l := hiLo(lh * v)
-	p3h, p3l := hiLo(hl * v)
-	p4h, p4l := hiLo(hh * v)
+    lh, ll := hiLo(lo.Lo)
+    hh, hl := hiLo(lo.Hi)
+    p1h, _ := hiLo(ll * v)
+    p2h, p2l := hiLo(lh * v)
+    p3h, p3l := hiLo(hl * v)
+    p4h, p4l := hiLo(hh * v)
 
-	var t, h uint32
-	t, lo.Lo = hiLo(p1h + p2l)
-	t, h = hiLo(p2h + p3l + t)
-	lo.Lo |= h << 16
-	t, lo.Hi = hiLo(p3h + p4l + t)
-	t, h = hiLo(p4h + t)
-	lo.Hi |= h << 16
-	_ := t
+    var t, h uint32
+    t, lo.Lo = hiLo(p1h + p2l)
+    t, h = hiLo(p2h + p3l + t)
+    lo.Lo |= h << 16
+    t, lo.Hi = hiLo(p3h + p4l + t)
+    t, h = hiLo(p4h + t)
+    lo.Hi |= h << 16
+    _ := t
 }
 
-func (lo *Long) shift16() {
-	lo.Lo >>= 16
-	lo.Lo |= lo.Hi << 16
-	lo.Hi >>= 16
+func (lo *Long) shiftRight16() {
+    lo.Lo >>= 16
+    lo.Lo |= lo.Hi << 16
+    lo.Hi >>= 16
 }
 
-func (lo *Long) shift(n uint) {
-	lo.Lo >>= n
-	lo.Lo |= lo.Hi << (32-n)
-	lo.Hi >>= n
+func (lo *Long) ShiftRight(n uint) {
+    lo.Lo >>= n
+    lo.Lo |= lo.Hi << (32 - n)
+    lo.Hi >>= n
+}
+
+// UdivU16 divides the number with a small 16-bit number.
+// Returns the modular.
+func (lo *Long) UdivU16(v uint32) uint32 {
+    m := lo.Hi % v
+    lo.Hi = lo.Hi / v
+    lh, ll := hiLo(lo.Lo)
+    t := (m << 16) | lh
+    m = t % v
+    lh = t / v
+    t = (m << 16) | ll
+    ll = t / v
+    lo.Lo = (lh << 16) | ll
+    return t % v
 }
 
 func (lo *Long) Udiv1e9() {
-	save := *lo
-	lo.mulAndShift16(0x5f41)
-	save.mulAndShift16(0x8970)
-
-	lo.shift16()
-	lo.Add(&save)
-	lo.shift(29)
+    lo.UdivU16(1000)
+    lo.UdivU16(1000)
+    lo.UdivU16(1000)
 }
 
 func (lo *Long) ToWire(buf []byte) {
@@ -152,5 +163,5 @@ func (lo *Long) ToWire(buf []byte) {
 }
 
 func (lo *Long) Equals(other *Long) bool {
-	return lo.Hi == other.Hi && lo.Lo == other.Lo
+    return lo.Hi == other.Hi && lo.Lo == other.Lo
 }
