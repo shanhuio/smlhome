@@ -1,105 +1,109 @@
-func hiLo(v uint32) (uint32, uint32) {
-    return v >> 16, v & 0xffff
-}
-
 struct Long {
     Hi uint32
     Lo uint32
 }
 
-func (lo *Long) IsZero() bool {
-    return lo.Hi == 0 && lo.Lo == 0
+func (u *Long) IsZero() bool {
+    return u.Hi == 0 && u.Lo == 0
 }
 
-func (lo *Long) Sign() uint32 {
-    return (lo.Hi >> 31) & 0x1
+func (u *Long) Sign() uint32 {
+    return u.Hi >> 31
 }
 
-func (lo *Long) Positive() bool {
-    return !lo.IsZero() && lo.Sign() == 0
+func (u *Long) Positive() bool {
+    return !u.IsZero() && u.Sign() == 0
 }
 
-func (lo *Long) Negative() bool {
-    return !lo.IsZero() && lo.Sign() == 1
+func (u *Long) Negative() bool {
+    return !u.IsZero() && u.Sign() == 1
 }
 
-func (lo *Long) Set(high, low uint32) {
-    lo.Hi = high
-    lo.Lo = low
+func (u *Long) Set(high, low uint32) {
+    u.Hi = high
+    u.Lo = low
 }
 
-func (lo *Long) Iset(v int32) {
+func (u *Long) Iset(v int32) {
     if v < 0 {
-        lo.Hi = ^uint32(0)
-        lo.Lo = uint32(v)
+        u.Hi = ^uint32(0)
+        u.Lo = uint32(v)
     } else {
-        lo.Hi = 0
-        lo.Lo = uint32(v)
+        u.Hi = 0
+        u.Lo = uint32(v)
     }
 }
 
-func (lo *Long) Uset(v uint32) {
-    lo.Hi = 0
-    lo.Lo = v
+func (u *Long) Uset(v uint32) {
+    u.Hi = 0
+    u.Lo = v
 }
 
-func (lo *Long) Uadd(v uint32) {
+func (u *Long) Uadd(v uint32) {
     var n Long
     n.Uset(v)
-    lo.Add(&n)
+    u.Add(&n)
 }
 
-func (lo *Long) Add(n *Long) {
-    lh1, ll1 := hiLo(lo.Lo)
-    hh1, hl1 := hiLo(lo.Hi)
+// Add adds a long in, returns the carry.
+func (u *Long) Add(n *Long) uint32 {
+    lh1, ll1 := hiLo(u.Lo)
+    hh1, hl1 := hiLo(u.Hi)
     lh2, ll2 := hiLo(n.Lo)
     hh2, hl2 := hiLo(n.Hi)
 
-    var t, hi uint32
-    t, lo.Lo = hiLo(ll1 + ll2)
+    var t, hi, lo uint32
+    t, lo = hiLo(ll1 + ll2)
     t, hi = hiLo(lh1 + lh2 + t)
-    lo.Lo |= (hi << 16)
+    u.Lo = bind(hi, lo)
 
-    t, lo.Hi = hiLo(hl1 + hl2 + t)
+    t, lo = hiLo(hl1 + hl2 + t)
     t, hi = hiLo(hh1 + hh2 + t)
-    lo.Hi |= (hi << 16)
-    _ := t
+    u.Hi = bind(hi, lo)
+    return t
 }
 
-func (lo *Long) Usub(v uint32) {
+// Usub subtracts a uint32.
+func (u *Long) Usub(v uint32) {
     var n Long
     n.Uset(v)
     n.Negate()
-    lo.Add(&n)
+    u.Add(&n)
 }
 
-func (lo *Long) Sub(n *Long) {
+// Sub subtracts the number. Returns the carry.
+func (u *Long) Sub(n *Long) uint32 {
     t := *n
     t.Negate()
-    lo.Add(n)
+    return u.Add(n)
 }
 
-func (lo *Long) Iadd(v int32) {
+func (u *Long) Iadd(v int32) {
     if v < 0 {
-        lo.Usub(uint32(-v))
+        u.Usub(uint32(-v))
     } else {
-        lo.Uadd(uint32(v))
+        u.Uadd(uint32(v))
     }
 }
 
-func (lo *Long) Inc() {
-    lo.Lo++
-    if lo.Lo == 0 {
-        lo.Hi++
+// Inc increases the number by one. Returns the carry.
+func (u *Long) Inc() uint32 {
+    u.Lo++
+    if u.Lo == 0 {
+        u.Hi++
     }
+    if u.Hi == 0 return 1
+    return 0
 }
 
-func (lo *Long) Negate() {
-    lo.Hi = ^lo.Hi
-    lo.Lo = ^lo.Lo
-    lo.Inc()
+// Negate returns the negation of the number.
+func (u *Long) Negate() {
+    u.Hi = ^u.Hi
+    u.Lo = ^u.Lo
+    u.Inc()
 }
 
+// Ival returns the int32 value of the number.
 func (lo *Long) Ival() int32 {
     return int32(lo.Lo)
 }
