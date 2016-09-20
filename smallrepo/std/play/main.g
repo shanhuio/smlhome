@@ -18,7 +18,7 @@ func main() {
         fmt.PrintInt(err)
         fmt.Println()
 
-        vpc.Timestamp(&ts)
+        vpc.TimeElapsed(&ts)
         fmt.PrintUint(ts.Hi)
         fmt.Println()
         fmt.PrintUint(ts.Lo)
