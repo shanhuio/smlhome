@@ -15,5 +15,5 @@ localdown:
 localup:
 	-rm std.zip
 	cd smallrepo/std && zip -r ../../std.zip .
-	smlclient -host="http://localhost:3356" -space="h8liu:322e43792e48" -in="std.zip"
+	smlclient -host="http://localhost:3356" -space="h8liu:9c44c2173964" -in="std.zip"
 	rm std.zip
