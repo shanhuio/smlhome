@@ -56,10 +56,10 @@ func Call(s uint, req, resp []byte) (n int, err int) {
 }
 
 // Poll polls for incoming messages.
-func Poll(waitMillis *uint, msg []byte) (s uint, n int, err int) {
-    if waitMillis != nil {
-        var buf [4]byte // duration in nanosecond
-		binary.PutU32(buf[:], *waitMillis)
+func Poll(waitNanos *long.Long, msg []byte) (s uint, n int, err int) {
+    if waitNanos != nil {
+        var buf [8]byte // duration in nanosecond
+        waitNanos.ToWire(buf[:])
         vpc.reqAddr = uint(&buf[0])
         vpc.reqLen = len(buf)
     } else {
