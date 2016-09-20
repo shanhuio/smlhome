@@ -27,7 +27,7 @@ func drawMessage(s string) {
 }
 
 func drawStats(bs []byte) {
-    for i := 0; i < 50; i++ {
+    for i := 0; i < 20; i++ {
         screen.PrintAt(xoffset + 10, yoffset + i, ' ')
     }
     for i := 0; i < len(bs); i++ {
@@ -35,3 +35,19 @@ func drawStats(bs []byte) {
     }
 }
 
+func drawTime(t int) {
+    var buf [20]byte
+    var line bytes.Buffer
+    line.Init(buf[:])
+    fmt.FprintInt(&line, t)
+    line.WriteString(" sec")
+
+    bs := line.Bytes()
+
+    for i := 0; i < 20; i++ {
+        screen.PrintAt(xoffset + 11, yoffset + i, ' ')
+    }
+    for i := 0; i < len(bs); i++ {
+        screen.PrintAt(xoffset + 11, yoffset + i, char(bs[i]))
+    }
+}

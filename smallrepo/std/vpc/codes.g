@@ -5,3 +5,12 @@ const (
     Rand = 3
     Clock = 4
 )
+
+const (
+    ErrNotFound = 1
+    ErrInvalidArg = 2
+    ErrMemory = 3
+    ErrSmallBuf = 4
+    ErrInternal = 5
+    ErrTimeout = 6
+)

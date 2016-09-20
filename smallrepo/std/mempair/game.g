@@ -18,6 +18,7 @@ struct game {
     paired bool
 
     state int
+    startTime long.Long
 }
 
 func (g *game) init() {
@@ -35,6 +36,7 @@ func (g *game) init() {
     g.left = nblock / 2
     g.state = waitForP1
     g.failedTries = 0
+    vpc.TimeElapsed(&g.startTime)
 }
 
 func (g *game) shuffle() {
@@ -113,7 +115,25 @@ func (g *game) screenClick(x, y int) {
 }
 
 func (g *game) waitClick() {
-    g.screenClick(screen.WaitClick())
+    var timeout long.Long
+    timeout.Iset(200000000)
+    for {
+        x, y, ok := screen.WaitClick(&timeout)
+        if ok {
+            g.screenClick(x, y)
+            return
+        }
+
+        if g.state != gameOver {
+            var t long.Long
+            vpc.TimeElapsed(&t)
+            t.Sub(&g.startTime)
+            t.Udiv1e9()
+            secs := t.Ival()
+
+            drawTime(secs)
+        }
+    }
 }
 
 func (g *game) draw() {

@@ -75,7 +75,7 @@ func (u *Long) Usub(v uint32) {
 func (u *Long) Sub(n *Long) uint32 {
     t := *n
     t.Negate()
-    return u.Add(n)
+    return u.Add(&t)
 }
 
 // Iadd adds a int32.
