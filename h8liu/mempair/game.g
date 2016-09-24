@@ -119,9 +119,13 @@ func (g *game) waitClick() {
     var timeout long.Long
     timeout.Iset(200000000)
     for {
-        x, y, ok := screen.WaitClick(&timeout)
+        p, ok := table.WaitClick(&timeout)
         if ok {
-            g.screenClick(x, y)
+            if p == 255 {
+                g.click(0, false)
+            } else {
+                g.click(int(p), true)
+            }
             return
         }
 
@@ -161,11 +165,17 @@ func (g *game) drawBlock(p int) {
     x := p / height * xgrid + xoffset
     y := p % height * ygrid + yoffset
     b := g.board[p]
+    p8 := uint8(p)
+    table.SetFace(p8, b)
+
     if b == ' ' {
+        table.Hide(p8)
         screen.PrintAt(x, y, '.')
     } else if g.visible[p] {
+        table.ShowFront(p8)
         screen.PrintAt(x, y, b)
     } else {
+        table.ShowBack(p8)
         screen.PrintAt(x, y, '+')
     }
 }
