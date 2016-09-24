@@ -177,9 +177,9 @@ func (lo *Long) Equals(other *Long) bool {
 }
 
 func (lo *Long) LargerThan(other *Long) bool {
-	hi1 := int32(lo.Hi)
-	hi2 := int32(other.Hi)
-	if hi1 > hi2 return true
-	if hi1 < hi2 return false
-	return lo.Lo > other.Lo
+    hi1 := int32(lo.Hi)
+    hi2 := int32(other.Hi)
+    if hi1 > hi2 return true
+    if hi1 < hi2 return false
+    return lo.Lo > other.Lo
 }

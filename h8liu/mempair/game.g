@@ -19,7 +19,7 @@ struct game {
 
     state int
     startTime long.Long
-	timeout long.Long
+    timeout long.Long
 }
 
 func (g *game) init() {
@@ -85,8 +85,8 @@ func (g *game) click(p int, valid bool) {
         g.state = waitForTimeout
         g.dirty.touch(p)
 
-		vpc.TimeElapsed(&g.timeout)
-		g.timeout.Iadd(1000000000)
+        vpc.TimeElapsed(&g.timeout)
+        g.timeout.Iadd(1000000000)
     } else if g.state == waitForTimeout {
         g.dirty.touch(g.p1)
         g.dirty.touch(g.p2)
@@ -129,18 +129,18 @@ func (g *game) waitClick() {
             var now long.Long
             vpc.TimeElapsed(&now)
 
-			// draw the time in seconds
-			t := now
+            // draw the time in seconds
+            t := now
             t.Sub(&g.startTime)
             t.Udiv1e9()
             secs := t.Ival()
             drawTime(secs)
 
-			if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
-				// timeout, simulate a screen click
-				g.screenClick(0, 0)
-				return
-			}
+            if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
+                // timeout, simulate a screen click
+                g.screenClick(0, 0)
+                return
+            }
         }
     }
 }

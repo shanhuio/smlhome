@@ -4,6 +4,7 @@ const (
     Screen = 2
     Rand = 3
     Clock = 4
+    Table = 5
 )
 
 const (
