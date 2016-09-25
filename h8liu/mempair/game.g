@@ -32,7 +32,7 @@ func (g *game) init() {
     for i := 0; i < nblock; i++ {
         g.board[i] = 'A' + char(i / 2)
     }
-    // g.shuffle()
+    g.shuffle()
     g.setFaces()
 
     g.left = nblock / 2
