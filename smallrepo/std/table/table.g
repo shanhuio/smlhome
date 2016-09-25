@@ -11,29 +11,19 @@ func act(action, pos uint8, face char) {
 }
 
 const (
-    actionShow = 1
-    actionShowFront = 2
-    actionShowBack = 3
-    actionHide = 4
-    actionSetFace = 5
+    Show = 1
+    ShowFront = 2
+    ShowBack = 3
+    Hide = 4
+    HideFront = 5
+    HideBack = 6
 )
 
-func Show(pos uint8) {
-    act(actionShow, pos, char(0))
-}
-
-func Hide(pos uint8) {
-    act(actionHide, pos, char(0))
-}
-
-func ShowFront(pos uint8) {
-    act(actionShowFront, pos, char(0))
-}
-
-func ShowBack(pos uint8) {
-    act(actionShowBack, pos, char(0))
+func Act(pos, action uint8) {
+    act(action, pos, char(0))
 }
 
 func SetFace(pos uint8, c char) {
-    act(actionSetFace, pos, c)
+    const setFace = 7
+    act(setFace, pos, c)
 }

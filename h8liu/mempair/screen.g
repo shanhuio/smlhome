@@ -19,20 +19,34 @@ func translateClick(x, y int) (int, bool) {
     return x * height + y, true
 }
 
-func drawMessage(s string) {
-    for i := 0; i < 50; i++ {
-        screen.PrintAt(xoffset - 2, yoffset + i, ' ')
+func drawString(x, y int, s string, w int) {
+    n := len(s)
+    for i := 0; i < w; i++ {
+        if i < n {
+            screen.PrintAt(x, y + i, s[i])
+        } else {
+            screen.PrintAt(x, y + i, ' ')
+        }
     }
-    screen.PrintStrAt(xoffset - 2, yoffset, s)
+}
+
+func drawBytes(x, y int, bs []byte, w int) {
+    n := len(bs)
+    for i := 0; i < w; i++ {
+        if i < n {
+            screen.PrintAt(x, y + i, char(bs[i]))
+        } else {
+            screen.PrintAt(x, y + i, ' ')
+        }
+    }
+}
+
+func drawMessage(s string) {
+    drawString(xoffset - 2, yoffset, s, 50)
 }
 
 func drawStats(bs []byte) {
-    for i := 0; i < 20; i++ {
-        screen.PrintAt(xoffset + 10, yoffset + i, ' ')
-    }
-    for i := 0; i < len(bs); i++ {
-        screen.PrintAt(xoffset + 10, yoffset + i, char(bs[i]))
-    }
+    drawBytes(xoffset + 10, yoffset, bs, 20)
 }
 
 func drawTime(t int) {
@@ -42,12 +56,5 @@ func drawTime(t int) {
     fmt.FprintInt(&line, t)
     line.WriteString(" sec")
 
-    bs := line.Bytes()
-
-    for i := 0; i < 20; i++ {
-        screen.PrintAt(xoffset + 11, yoffset + i, ' ')
-    }
-    for i := 0; i < len(bs); i++ {
-        screen.PrintAt(xoffset + 11, yoffset + i, char(bs[i]))
-    }
+    drawBytes(xoffset + 11, yoffset, line.Bytes(), 20)
 }

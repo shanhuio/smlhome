@@ -32,13 +32,22 @@ func (g *game) init() {
     for i := 0; i < nblock; i++ {
         g.board[i] = 'A' + char(i / 2)
     }
-    g.shuffle()
+    // g.shuffle()
+    g.setFaces()
 
     g.left = nblock / 2
     g.state = waitForP1
     g.failedTries = 0
 
     vpc.TimeElapsed(&g.startTime)
+}
+
+func (g *game) setFaces() {
+    for i := 0; i < nblock; i++ {
+        p := byte(i)
+        table.Act(p, table.HideBack)
+        table.SetFace(p, g.board[i])
+    }
 }
 
 func (g *game) shuffle() {
@@ -115,36 +124,67 @@ func (g *game) screenClick(x, y int) {
     g.click(translateClick(x, y))
 }
 
-func (g *game) waitClick() {
+var msgBuf [vpc.MaxLen]byte
+
+func (g *game) handleInput() bool {
     var timeout long.Long
     timeout.Iset(200000000)
-    for {
-        p, ok := table.WaitClick(&timeout)
-        if ok {
-            if p == 255 {
-                g.click(0, false)
-            } else {
-                g.click(int(p), true)
-            }
-            return
+
+    service, n, err := vpc.Poll(&timeout, msgBuf[:])
+    if err == vpc.ErrTimeout return false
+
+    if err != 0 {
+        printInt(err)
+        panic()
+    }
+    msg := msgBuf[:n]
+
+    if service == vpc.Screen {
+        x, y, ok := screen.HandleClick(msg)
+        if !ok {
+            fmt.PrintStr("invalid screen click\n")
+            panic()
         }
 
-        if g.state != gameOver {
-            var now long.Long
-            vpc.TimeElapsed(&now)
+        g.click(translateClick(x, y))
+        return true
+    } else if service == vpc.Table {
+        p, ok := table.HandleClick(msg)
+        if !ok {
+            fmt.PrintStr("invalid table click\n")
+            panic()
+        }
 
-            // draw the time in seconds
-            t := now
-            t.Sub(&g.startTime)
-            t.Udiv1e9()
-            secs := t.Ival()
-            drawTime(secs)
+        if p == 255 {
+            g.click(0, false)
+        } else {
+            g.click(int(p), true)
+        }
+        return true
+    }
 
-            if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
-                // timeout, simulate a screen click
-                g.screenClick(0, 0)
-                return
-            }
+    fmt.PrintStr("unknown service input\n")
+    return false
+}
+
+func (g *game) waitClick() {
+    for !g.handleInput() {
+        if g.state == gameOver continue
+
+        var now long.Long
+        vpc.TimeElapsed(&now)
+
+        // draw the time in seconds
+        t := now
+        t.Sub(&g.startTime)
+        t.Udiv1e9()
+        secs := t.Ival()
+        drawTime(secs)
+
+        if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
+            // timeout, simulate a screen click
+            g.screenClick(0, 0)
+            return
         }
     }
 }
@@ -166,16 +206,15 @@ func (g *game) drawBlock(p int) {
     y := p % height * ygrid + yoffset
     b := g.board[p]
     p8 := uint8(p)
-    table.SetFace(p8, b)
 
     if b == ' ' {
-        table.Hide(p8)
+        table.Act(p8, table.HideBack)
         screen.PrintAt(x, y, '.')
     } else if g.visible[p] {
-        table.ShowFront(p8)
+        table.Act(p8, table.ShowFront)
         screen.PrintAt(x, y, b)
     } else {
-        table.ShowBack(p8)
+        table.Act(p8, table.ShowBack)
         screen.PrintAt(x, y, '+')
     }
 }
