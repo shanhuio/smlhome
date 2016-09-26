@@ -43,10 +43,12 @@ func drawBytes(x, y int, bs []byte, w int) {
 
 func drawMessage(s string) {
     drawString(xoffset - 2, yoffset, s, 50)
+    table.SetText(0, s)
 }
 
 func drawStats(bs []byte) {
     drawBytes(xoffset + 10, yoffset, bs, 20)
+    table.SetTextBytes(1, bs)
 }
 
 func drawTime(t int) {
@@ -56,5 +58,7 @@ func drawTime(t int) {
     fmt.FprintInt(&line, t)
     line.WriteString(" sec")
 
-    drawBytes(xoffset + 11, yoffset, line.Bytes(), 20)
+    bs := line.Bytes()
+    drawBytes(xoffset + 11, yoffset, bs, 20)
+    table.SetTextBytes(3, bs)
 }

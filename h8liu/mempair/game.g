@@ -8,6 +8,7 @@ const (
 struct game {
     left int
     failedTries int
+    started bool
 
     board [nblock]char
     visible [nblock]bool
@@ -38,8 +39,7 @@ func (g *game) init() {
     g.left = nblock / 2
     g.state = waitForP1
     g.failedTries = 0
-
-    vpc.TimeElapsed(&g.startTime)
+    g.started = false
 }
 
 func (g *game) setFaces() {
@@ -69,6 +69,52 @@ func (g *game) clean() {
     g.dirty.clean()
 }
 
+func (g *game) clickP1(p int) {
+    if !g.clickable(p) return
+    g.p1 = p
+    g.visible[p] = true
+    g.state = waitForP2
+    g.dirty.touch(p)
+    if !g.started {
+        g.started = true
+        vpc.TimeElapsed(&g.startTime)
+    }
+}
+
+func (g *game) clickP2(p int) {
+    if g.p1 == p return
+
+    g.p2 = p
+    g.visible[p] = true
+    g.paired = (g.board[g.p1] == g.board[g.p2])
+
+    g.state = waitForTimeout
+    g.dirty.touch(p)
+
+    vpc.TimeElapsed(&g.timeout)
+    g.timeout.Iadd(1000000000)
+}
+
+func (g *game) clickResult() {
+    g.dirty.touch(g.p1)
+    g.dirty.touch(g.p2)
+
+    if g.paired { // paired
+        g.board[g.p1] = ' '
+        g.board[g.p2] = ' '
+        g.left--
+        if g.left <= 0 {
+            g.state = gameOver
+            return
+        }
+    } else {
+        g.visible[g.p1] = false
+        g.visible[g.p2] = false
+        g.failedTries++
+    }
+    g.state = waitForP1
+}
+
 func (g *game) click(p int, valid bool) {
     if g.state == gameOver {
         g.init()
@@ -77,43 +123,16 @@ func (g *game) click(p int, valid bool) {
 
     if g.state == waitForP1 {
         if !valid return
-        if !g.clickable(p) return
-        g.p1 = p
-        g.visible[p] = true
-        g.state = waitForP2
-        g.dirty.touch(p)
+        g.clickP1(p)
     } else if g.state == waitForP2 {
         if !valid return
         if !g.clickable(p) return
-        if g.p1 == p return
-
-        g.p2 = p
-        g.visible[p] = true
-        g.paired = (g.board[g.p1] == g.board[g.p2])
-
-        g.state = waitForTimeout
-        g.dirty.touch(p)
-
-        vpc.TimeElapsed(&g.timeout)
-        g.timeout.Iadd(1000000000)
+        g.clickP2(p)
     } else if g.state == waitForTimeout {
-        g.dirty.touch(g.p1)
-        g.dirty.touch(g.p2)
-
-        if g.paired { // paired
-            g.board[g.p1] = ' '
-            g.board[g.p2] = ' '
-            g.left--
-            if g.left <= 0 {
-                g.state = gameOver
-                return
-            }
-        } else {
-            g.visible[g.p1] = false
-            g.visible[g.p2] = false
-            g.failedTries++
+        g.clickResult()
+        if valid {
+            g.clickP1(p)
         }
-        g.state = waitForP1
     } else {
         fmt.PrintStr("entered invalid state")
         g.init()
@@ -175,16 +194,20 @@ func (g *game) waitClick() {
         vpc.TimeElapsed(&now)
 
         // draw the time in seconds
-        t := now
-        t.Sub(&g.startTime)
-        t.Udiv1e9()
-        secs := t.Ival()
-        drawTime(secs)
+        if !g.started {
+            drawTime(0)
+        } else {
+            t := now
+            t.Sub(&g.startTime)
+            t.Udiv1e9()
+            secs := t.Ival()
+            drawTime(secs)
 
-        if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
-            // timeout, simulate a screen click
-            g.screenClick(0, 0)
-            return
+            if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
+                // timeout, simulate a screen click
+                g.screenClick(0, 0)
+                return
+            }
         }
     }
 }
@@ -238,17 +261,17 @@ func (g *game) drawDirty() {
 
 func (g *game) drawStateMessage() {
     if g.state == waitForP1 {
-        drawMessage("Click a '+' block.")
+        drawMessage("Click a card.")
     } else if g.state == waitForP2 {
-        drawMessage("Click a another '+' block.")
+        drawMessage("Click a another card.")
     } else if g.state == waitForTimeout {
         if g.paired {
-            drawMessage("Paired! (click anywhere to continue)")
+            drawMessage("Paired!")
         } else {
-            drawMessage("Mispaired. (click anywhere to continue)")
+            drawMessage("Mispaired.")
         }
     } else if g.state == gameOver {
-        drawMessage("You won. (click anywhere to start a new game)")
+        drawMessage("You won!")
     }
 }
 
@@ -257,7 +280,7 @@ func (g *game) drawStats() {
     var stats bytes.Buffer
     stats.Init(buf[:])
 
-    stats.WriteString("tries: ")
+    stats.WriteString("failed tries: ")
     fmt.FprintInt(&stats, g.failedTries)
 
     drawStats(stats.Bytes())
