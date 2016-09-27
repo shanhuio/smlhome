@@ -1,1 +1,1 @@
-Smallrepo's standard library.
+The standard library; under construction.
