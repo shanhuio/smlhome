@@ -1,1 +1,1 @@
-Offline version of smlrepo code.
+G language code written in and for Small VM.
