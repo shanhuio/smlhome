@@ -1,7 +1,10 @@
 .PHONY: all fmt
 
 all:
-	sml
+	sml -test=false
+
+test:
+	sml -test=true
 
 fmt:
 	gfmt `find . -name *.g`

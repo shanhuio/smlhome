@@ -1,0 +1,11 @@
+sudo: false
+language: go
+
+go:
+    - 1.7
+
+install:
+    - go get shanhu.io/smlvm/cmd/sml
+
+script:
+    - sml -test=true
