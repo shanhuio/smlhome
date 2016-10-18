@@ -111,6 +111,7 @@ func (g *game) clickP2(p int) {
 func (g *game) clickResult() {
     g.dirty.touch(g.p1)
     g.dirty.touch(g.p2)
+    g.clickTimer.Clear()
 
     if g.paired { // paired
         g.cards[g.p1].hidden = true
