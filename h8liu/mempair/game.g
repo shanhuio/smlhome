@@ -6,12 +6,14 @@ const (
 )
 
 struct game {
+    v *view
+
     left int
     failedTries int
-    started bool
 
-    board [nblock]char
-    visible [nblock]bool
+    deck [nblock]card
+    cards [nblock]*card
+
     dirty dirtyMap
     allDirty bool
 
@@ -19,49 +21,43 @@ struct game {
     paired bool
 
     state int
+    started bool
     startTime long.Long
     timeout long.Long
 }
 
 func (g *game) init() {
     for i := 0; i < nblock; i++ {
-        g.visible[i] = false
+        c := &g.deck[i]
+        c.face = 'A' + char(i / 2)
+        c.showingFace = false
+        c.hidden = false
+        g.cards[i] = c
     }
+
     g.dirty.clean()
     g.allDirty = true
 
-    for i := 0; i < nblock; i++ {
-        g.board[i] = 'A' + char(i / 2)
-    }
-    g.shuffle()
+    shuffle(g.cards[:])
     g.setFaces()
 
     g.left = nblock / 2
     g.state = waitForP1
     g.failedTries = 0
     g.started = false
+    g.v = &theView
 }
 
 func (g *game) setFaces() {
     for i := 0; i < nblock; i++ {
         p := byte(i)
         table.Act(p, table.HideBack)
-        table.SetFace(p, g.board[i])
-    }
-}
-
-func (g *game) shuffle() {
-    for i := 0; i < nblock - 1; i++ {
-        step := int(misc.Rand() % uint(nblock - i))
-        if step == 0 continue
-
-        t := i + step
-        g.board[t], g.board[i] = g.board[i], g.board[t]
+        table.SetFace(p, g.cards[i].face)
     }
 }
 
 func (g *game) clickable(p int) bool {
-    return g.board[p] != ' '
+    return !g.cards[p].hidden
 }
 
 func (g *game) clean() {
@@ -72,7 +68,7 @@ func (g *game) clean() {
 func (g *game) clickP1(p int) {
     if !g.clickable(p) return
     g.p1 = p
-    g.visible[p] = true
+    g.cards[p].showingFace = true
     g.state = waitForP2
     g.dirty.touch(p)
     if !g.started {
@@ -85,8 +81,8 @@ func (g *game) clickP2(p int) {
     if g.p1 == p return
 
     g.p2 = p
-    g.visible[p] = true
-    g.paired = (g.board[g.p1] == g.board[g.p2])
+    g.cards[p].showingFace = true
+    g.paired = (g.cards[g.p1].face == g.cards[g.p2].face)
 
     g.state = waitForTimeout
     g.dirty.touch(p)
@@ -100,16 +96,16 @@ func (g *game) clickResult() {
     g.dirty.touch(g.p2)
 
     if g.paired { // paired
-        g.board[g.p1] = ' '
-        g.board[g.p2] = ' '
+        g.cards[g.p1].hidden = true
+        g.cards[g.p2].hidden = true
         g.left--
         if g.left <= 0 {
             g.state = gameOver
             return
         }
     } else {
-        g.visible[g.p1] = false
-        g.visible[g.p2] = false
+        g.cards[g.p1].showingFace = false
+        g.cards[g.p2].showingFace = false
         g.failedTries++
     }
     g.state = waitForP1
@@ -139,17 +135,21 @@ func (g *game) click(p int, valid bool) {
     }
 }
 
-func (g *game) screenClick(x, y int) {
-    g.click(translateClick(x, y))
-}
-
 var msgBuf [vpc.MaxLen]byte
 
-func (g *game) handleInput() bool {
-    var timeout long.Long
-    timeout.Iset(200000000)
+var tframe long.Long
 
-    service, n, err := vpc.Poll(&timeout, msgBuf[:])
+func init() {
+    tframe.Iset(200000000) // TODO: need var init or struct literal
+}
+
+func (g *game) handleInput() bool {
+    var timeout *long.Long
+    if g.started && g.state != gameOver {
+        timeout = &tframe
+    }
+
+    service, n, err := vpc.Poll(timeout, msgBuf[:])
     if err == vpc.ErrTimeout return false
 
     if err != 0 {
@@ -158,16 +158,7 @@ func (g *game) handleInput() bool {
     }
     msg := msgBuf[:n]
 
-    if service == vpc.Screen {
-        x, y, ok := screen.HandleClick(msg)
-        if !ok {
-            fmt.PrintStr("invalid screen click\n")
-            panic()
-        }
-
-        g.click(translateClick(x, y))
-        return true
-    } else if service == vpc.Table {
+    if service == vpc.Table {
         p, ok := table.HandleClick(msg)
         if !ok {
             fmt.PrintStr("invalid table click\n")
@@ -195,17 +186,17 @@ func (g *game) waitClick() {
 
         // draw the time in seconds
         if !g.started {
-            drawTime(0)
+            g.v.SetTime(0)
         } else {
             t := now
             t.Sub(&g.startTime)
             t.Udiv1e9()
             secs := t.Ival()
-            drawTime(secs)
+            g.v.SetTime(secs)
 
             if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
                 // timeout, simulate a screen click
-                g.screenClick(0, 0)
+                g.click(0, false)
                 return
             }
         }
@@ -220,25 +211,20 @@ func (g *game) draw() {
     }
 
     g.clean()
-    g.drawStateMessage()
+    g.v.SetMessage(g.stateMessage())
     g.drawStats()
 }
 
 func (g *game) drawBlock(p int) {
-    x := p / height * xgrid + xoffset
-    y := p % height * ygrid + yoffset
-    b := g.board[p]
+    c := g.cards[p]
     p8 := uint8(p)
 
-    if b == ' ' {
+    if c.hidden {
         table.Act(p8, table.HideBack)
-        screen.PrintAt(x, y, '.')
-    } else if g.visible[p] {
+    } else if c.showingFace {
         table.Act(p8, table.ShowFront)
-        screen.PrintAt(x, y, b)
     } else {
         table.Act(p8, table.ShowBack)
-        screen.PrintAt(x, y, '+')
     }
 }
 
@@ -259,20 +245,16 @@ func (g *game) drawDirty() {
     }
 }
 
-func (g *game) drawStateMessage() {
-    if g.state == waitForP1 {
-        drawMessage("Click a card.")
-    } else if g.state == waitForP2 {
-        drawMessage("Click a another card.")
-    } else if g.state == waitForTimeout {
-        if g.paired {
-            drawMessage("Paired!")
-        } else {
-            drawMessage("Mispaired.")
-        }
-    } else if g.state == gameOver {
-        drawMessage("You won!")
+func (g *game) stateMessage() string {
+    if g.state == waitForP1 return "Click a card."
+    if g.state == waitForP2 return "Click a another card."
+
+    if g.state == waitForTimeout {
+        if g.paired return "Paired!"
+        return "Mispaired."
     }
+    if g.state == gameOver return "You won!"
+    return ""
 }
 
 func (g *game) drawStats() {
@@ -283,5 +265,5 @@ func (g *game) drawStats() {
     stats.WriteString("failed tries: ")
     fmt.FprintInt(&stats, g.failedTries)
 
-    drawStats(stats.Bytes())
+    g.v.SetStats(stats.Bytes())
 }

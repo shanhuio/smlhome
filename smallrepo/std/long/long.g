@@ -3,6 +3,11 @@ struct Long {
     Lo uint32
 }
 
+func Min(a, b *Long) Long {
+    if a.LargerThan(b) return *b
+    return *a
+}
+
 func (u *Long) IsZero() bool {
     return u.Hi == 0 && u.Lo == 0
 }
@@ -161,10 +166,34 @@ func (lo *Long) UdivU16(v uint32) uint32 {
     return t % v
 }
 
+func (lo *Long) UmulU16(v uint32) {
+    lh, ll := hiLo(lo.Lo)
+    hh, hl := hiLo(lo.Hi)
+
+    var c1, c2, c3, c uint32
+    c1, ll = hiLo(ll * v)
+    c2, lh = hiLo(lh * v)
+    c3, hl = hiLo(lh * v)
+    c, hh = hiLo(hh * v)
+
+    c, lh = hiLo(lh + c1)
+    c, hl = hiLo(hl + c2 + c)
+    c, hh = hiLo(hh + c3 + c)
+
+    lo.Lo = bind(lh, ll)
+    lo.Hi = bind(hh, hl)
+}
+
 func (lo *Long) Udiv1e9() {
     lo.UdivU16(1000)
     lo.UdivU16(1000)
     lo.UdivU16(1000)
+}
+
+func (lo *Long) Umul1e9() {
+    lo.UmulU16(1000)
+    lo.UmulU16(1000)
+    lo.UmulU16(1000)
 }
 
 func (lo *Long) ToWire(buf []byte) {
