@@ -21,9 +21,9 @@ struct game {
     paired bool
 
     state int
-    started bool
-    startTime long.Long
-    timeout long.Long
+
+    ticker time.Ticker
+    clickTimer time.Timer
 }
 
 func (g *game) init() {
@@ -44,7 +44,8 @@ func (g *game) init() {
     g.left = nblock / 2
     g.state = waitForP1
     g.failedTries = 0
-    g.started = false
+
+    g.ticker.Clear()
     g.v = &theView
 }
 
@@ -65,16 +66,33 @@ func (g *game) clean() {
     g.dirty.clean()
 }
 
+func (g *game) started() bool {
+    return g.ticker.Running()
+}
+
+var oneSec long.Long
+
+func init() {
+    oneSec.Uset(1000000000)
+}
+
 func (g *game) clickP1(p int) {
     if !g.clickable(p) return
     g.p1 = p
     g.cards[p].showingFace = true
     g.state = waitForP2
     g.dirty.touch(p)
-    if !g.started {
-        g.started = true
-        vpc.TimeElapsed(&g.startTime)
+
+    if !g.ticker.Running() {
+        now := etime()
+        g.ticker.Start(&now, &oneSec)
     }
+}
+
+func (g *game) startClickTimer() {
+    t := etime()
+    t.Add(&oneSec)
+    g.clickTimer.SetDeadline(&t)
 }
 
 func (g *game) clickP2(p int) {
@@ -87,8 +105,7 @@ func (g *game) clickP2(p int) {
     g.state = waitForTimeout
     g.dirty.touch(p)
 
-    vpc.TimeElapsed(&g.timeout)
-    g.timeout.Iadd(1000000000)
+    g.startClickTimer()
 }
 
 func (g *game) clickResult() {
@@ -101,6 +118,7 @@ func (g *game) clickResult() {
         g.left--
         if g.left <= 0 {
             g.state = gameOver
+            g.ticker.Stop()
             return
         }
     } else {
@@ -135,21 +153,39 @@ func (g *game) click(p int, valid bool) {
     }
 }
 
-var msgBuf [vpc.MaxLen]byte
-
-var tframe long.Long
-
-func init() {
-    tframe.Iset(200000000) // TODO: need var init or struct literal
-}
-
-func (g *game) handleInput() bool {
-    var timeout *long.Long
-    if g.started && g.state != gameOver {
-        timeout = &tframe
+func (g *game) forward(now *long.Long) {
+    g.clickTimer.Forward(now)
+    if g.clickTimer.Triggered() {
+        g.click(0, false)
+        g.clickTimer.Clear()
     }
 
-    service, n, err := vpc.Poll(timeout, msgBuf[:])
+    g.ticker.Forward(now)
+    g.v.SetTime(g.ticker.N())
+}
+
+func (g *game) clickTimeout(next *long.Long) *long.Long {
+    next.SetImax()
+    ev := g.clickTimer.NextEvent(next)
+    ev = g.ticker.NextEvent(next) || ev
+    if !ev return nil
+
+    var now long.Long
+    vpc.TimeElapsed(&now)
+    if next.LargerThan(&now) {
+        next.Sub(&now)
+    } else {
+        next.Clear()
+    }
+    return next
+}
+
+var msgBuf [vpc.MaxLen]byte
+
+func (g *game) pollClick() bool {
+    var timeout long.Long
+
+    service, n, err := vpc.Poll(g.clickTimeout(&timeout), msgBuf[:])
     if err == vpc.ErrTimeout return false
 
     if err != 0 {
@@ -165,42 +201,12 @@ func (g *game) handleInput() bool {
             panic()
         }
 
-        if p == 255 {
-            g.click(0, false)
-        } else {
-            g.click(int(p), true)
-        }
+        g.click(int(p), p != 255)
         return true
     }
 
     fmt.PrintStr("unknown service input\n")
     return false
-}
-
-func (g *game) waitClick() {
-    for !g.handleInput() {
-        if g.state == gameOver continue
-
-        var now long.Long
-        vpc.TimeElapsed(&now)
-
-        // draw the time in seconds
-        if !g.started {
-            g.v.SetTime(0)
-        } else {
-            t := now
-            t.Sub(&g.startTime)
-            t.Udiv1e9()
-            secs := t.Ival()
-            g.v.SetTime(secs)
-
-            if g.state == waitForTimeout && now.LargerThan(&g.timeout) {
-                // timeout, simulate a screen click
-                g.click(0, false)
-                return
-            }
-        }
-    }
 }
 
 func (g *game) draw() {

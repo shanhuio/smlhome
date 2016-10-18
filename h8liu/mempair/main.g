@@ -7,7 +7,9 @@ func main() {
     g.init()
 
     for {
+        now := etime()
+        g.forward(&now)
         g.draw()
-        g.waitClick()
+        g.pollClick()
     }
 }

@@ -12,6 +12,16 @@ func (u *Long) IsZero() bool {
     return u.Hi == 0 && u.Lo == 0
 }
 
+func (u *Long) Clear() {
+    u.Hi = 0
+    u.Lo = 0
+}
+
+func (u *Long) SetImax() {
+    u.Hi = (^uint32(0)) >> 1
+    u.Lo = ^uint32(0)
+}
+
 func (u *Long) Sign() uint32 {
     return u.Hi >> 31
 }
