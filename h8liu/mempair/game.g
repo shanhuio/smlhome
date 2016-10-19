@@ -84,13 +84,13 @@ func (g *game) clickP1(p int) {
     g.dirty.touch(p)
 
     if !g.ticker.Running() {
-        now := etime()
+        now := timeNow()
         g.ticker.Start(&now, &oneSec)
     }
 }
 
 func (g *game) startClickTimer() {
-    t := etime()
+    t := timeNow()
     t.Add(&oneSec)
     g.clickTimer.SetDeadline(&t)
 }
@@ -149,19 +149,19 @@ func (g *game) click(p int, valid bool) {
             g.clickP1(p)
         }
     } else {
-        fmt.PrintStr("entered invalid state")
+        fmt.PrintStr("invalid state")
         g.init()
     }
 }
 
 func (g *game) forward(now *long.Long) {
     g.clickTimer.Forward(now)
+    g.ticker.Forward(now)
+
     if g.clickTimer.Triggered() {
         g.click(0, false)
         g.clickTimer.Clear()
     }
-
-    g.ticker.Forward(now)
     g.v.SetTime(g.ticker.N())
 }
 
