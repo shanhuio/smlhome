@@ -6,16 +6,12 @@ const (
 )
 
 struct game {
-    v *view
+    r render
+    deck [nblock]card
 
+    cards [nblock]*card
     left int
     failedTries int
-
-    deck [nblock]card
-    cards [nblock]*card
-
-    dirty dirtyMap
-    allDirty bool
 
     p1, p2 int
     paired bool
@@ -27,63 +23,63 @@ struct game {
 }
 
 func (g *game) init() {
+    g.r.init()
+    g.reset()
+}
+
+func (g *game) reset() {
     for i := 0; i < nblock; i++ {
         c := &g.deck[i]
-        c.face = 'A' + char(i / 2)
-        c.showingFace = false
-        c.hidden = false
         g.cards[i] = c
+        c.face = 'A' + char(i / 2)
+        c.faceUp = false
     }
 
-    g.dirty.clean()
-    g.allDirty = true
-
     shuffle(g.cards[:])
-    g.setFaces()
 
     g.left = nblock / 2
     g.state = waitForP1
     g.failedTries = 0
-
     g.ticker.Clear()
-    g.v = &theView
 }
 
-func (g *game) setFaces() {
-    for i := 0; i < nblock; i++ {
-        p := byte(i)
-        table.Act(p, table.HideBack)
-        table.SetFace(p, g.cards[i].face)
+func (g *game) message() string {
+    if g.state == waitForP1 return "Click a card."
+    if g.state == waitForP2 return "Click a another card."
+    if g.state == waitForTimeout {
+        if g.paired return "Paired!"
+        return "Mispaired."
     }
+    if g.state == gameOver return "You won!"
+    panic()
+    return ""
+}
+
+func (g *game) render() {
+    var prop renderProp
+    prop.message = g.message()
+    prop.cards = g.cards[:]
+    prop.failedTries = g.failedTries
+    prop.nsecond = g.ticker.N()
+
+    g.r.render(&prop)
 }
 
 func (g *game) clickable(p int) bool {
-    return !g.cards[p].hidden
-}
-
-func (g *game) clean() {
-    g.allDirty = false
-    g.dirty.clean()
+    return g.cards[p] != nil
 }
 
 func (g *game) started() bool {
     return g.ticker.Running()
 }
 
-var oneSec long.Long
-
-func init() {
-    oneSec.Uset(1000000000)
-}
-
 func (g *game) clickP1(p int) {
     if !g.clickable(p) return
     g.p1 = p
-    g.cards[p].showingFace = true
+    g.cards[p].faceUp = true
     g.state = waitForP2
-    g.dirty.touch(p)
 
-    if !g.ticker.Running() {
+    if !g.started() { // first click, game starts.
         now := timeNow()
         g.ticker.Start(&now, &oneSec)
     }
@@ -96,26 +92,23 @@ func (g *game) startClickTimer() {
 }
 
 func (g *game) clickP2(p int) {
+    if !g.clickable(p) return
     if g.p1 == p return
 
     g.p2 = p
-    g.cards[p].showingFace = true
-    g.paired = (g.cards[g.p1].face == g.cards[g.p2].face)
-
+    c := g.cards[p]
+    c.faceUp = true
+    g.paired = (g.cards[g.p1].face == c.face)
     g.state = waitForTimeout
-    g.dirty.touch(p)
-
     g.startClickTimer()
 }
 
 func (g *game) clickResult() {
-    g.dirty.touch(g.p1)
-    g.dirty.touch(g.p2)
     g.clickTimer.Clear()
 
     if g.paired { // paired
-        g.cards[g.p1].hidden = true
-        g.cards[g.p2].hidden = true
+        g.cards[g.p1] = nil
+        g.cards[g.p2] = nil
         g.left--
         if g.left <= 0 {
             g.state = gameOver
@@ -123,8 +116,8 @@ func (g *game) clickResult() {
             return
         }
     } else {
-        g.cards[g.p1].showingFace = false
-        g.cards[g.p2].showingFace = false
+        g.cards[g.p1].faceUp = false
+        g.cards[g.p2].faceUp = false
         g.failedTries++
     }
     g.state = waitForP1
@@ -132,7 +125,7 @@ func (g *game) clickResult() {
 
 func (g *game) click(p int, valid bool) {
     if g.state == gameOver {
-        g.init()
+        g.reset()
         return
     }
 
@@ -141,7 +134,6 @@ func (g *game) click(p int, valid bool) {
         g.clickP1(p)
     } else if g.state == waitForP2 {
         if !valid return
-        if !g.clickable(p) return
         g.clickP2(p)
     } else if g.state == waitForTimeout {
         g.clickResult()
@@ -150,7 +142,7 @@ func (g *game) click(p int, valid bool) {
         }
     } else {
         fmt.PrintStr("invalid state")
-        g.init()
+        panic()
     }
 }
 
@@ -159,10 +151,8 @@ func (g *game) forward(now *long.Long) {
     g.ticker.Forward(now)
 
     if g.clickTimer.Triggered() {
-        g.click(0, false)
-        g.clickTimer.Clear()
+        g.clickResult()
     }
-    g.v.SetTime(g.ticker.N())
 }
 
 func (g *game) clickTimeout(next *long.Long) *long.Long {
@@ -208,69 +198,4 @@ func (g *game) pollClick() bool {
 
     fmt.PrintStr("unknown service input\n")
     return false
-}
-
-func (g *game) draw() {
-    if g.allDirty {
-        g.drawAll()
-    } else {
-        g.drawDirty()
-    }
-
-    g.clean()
-    g.v.SetMessage(g.stateMessage())
-    g.drawStats()
-}
-
-func (g *game) drawBlock(p int) {
-    c := g.cards[p]
-    p8 := uint8(p)
-
-    if c.hidden {
-        table.Act(p8, table.HideBack)
-    } else if c.showingFace {
-        table.Act(p8, table.ShowFront)
-    } else {
-        table.Act(p8, table.ShowBack)
-    }
-}
-
-func (g *game) drawAll() {
-    for i := 0; i < width; i++ {
-        for j := 0; j < height; j++ {
-            g.drawBlock(i * height + j)
-        }
-    }
-}
-
-func (g *game) drawDirty() {
-    i := 0
-    for {
-        p, ok := g.dirty.iter(&i)
-        if !ok break
-        g.drawBlock(p)
-    }
-}
-
-func (g *game) stateMessage() string {
-    if g.state == waitForP1 return "Click a card."
-    if g.state == waitForP2 return "Click a another card."
-
-    if g.state == waitForTimeout {
-        if g.paired return "Paired!"
-        return "Mispaired."
-    }
-    if g.state == gameOver return "You won!"
-    return ""
-}
-
-func (g *game) drawStats() {
-    var buf [50]byte
-    var stats bytes.Buffer
-    stats.Init(buf[:])
-
-    stats.WriteString("failed tries: ")
-    fmt.FprintInt(&stats, g.failedTries)
-
-    g.v.SetStats(stats.Bytes())
 }

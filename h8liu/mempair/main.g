@@ -7,9 +7,10 @@ func main() {
     g.init()
 
     for {
+        g.render()
+        g.pollClick()
+
         now := timeNow()
         g.forward(&now)
-        g.draw()
-        g.pollClick()
     }
 }

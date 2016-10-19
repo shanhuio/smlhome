@@ -1,10 +1,10 @@
 struct dirtyMap {
-    dirty [nblock]bool
-    blocks [nblock]int
+    dirty [ncard]bool
+    blocks [ncard]byte
     n int
 }
 
-func (m *dirtyMap) touch(p int) {
+func (m *dirtyMap) touch(p byte) {
     if m.dirty[p] return
     m.dirty[p] = true
     m.blocks[m.n] = p
@@ -18,7 +18,7 @@ func (m *dirtyMap) clean() {
     m.n = 0
 }
 
-func (m *dirtyMap) iter(i *int) (int, bool) {
+func (m *dirtyMap) iter(i *int) (byte, bool) {
     if *i == m.n return 0, false
     ret := m.blocks[*i]
     *i++

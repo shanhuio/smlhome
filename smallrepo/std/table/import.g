@@ -1,4 +1,5 @@
 import (
     "vpc"
     "long"
+    "bytes"
 )

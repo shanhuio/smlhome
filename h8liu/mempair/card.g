@@ -1,7 +1,6 @@
 struct card {
     face char
-    showingFace bool
-    hidden bool
+    faceUp bool
 }
 
 func shuffle(cards []*card) {
