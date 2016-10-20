@@ -3,6 +3,7 @@ struct Ticker {
     interval long.Long
     nextTick long.Long
     counter int
+    updated bool
     running bool
 }
 
@@ -27,6 +28,7 @@ func (t *Ticker) Start(now, interval *long.Long) {
 func (t *Ticker) forwardOne(now *long.Long) bool {
     if !now.LargerThan(&t.nextTick) return false
     t.counter++
+    t.updated = true
     t.nextTick.Add(&t.interval)
     return true
 }
@@ -34,6 +36,12 @@ func (t *Ticker) forwardOne(now *long.Long) bool {
 func (t *Ticker) Forward(now *long.Long) {
     if !t.running return
     for t.forwardOne(now) {}
+}
+
+func (t *Ticker) Poll() bool {
+    if !t.updated return false
+    t.updated = false
+    return true
 }
 
 func (t *Ticker) N() int {
@@ -44,9 +52,7 @@ func (t *Ticker) Stop() {
     t.running = false
 }
 
-func (t *Ticker) NextEvent(next *long.Long) bool {
+func (t *Ticker) SetTimeout(timeout *Timeout) bool {
     if !t.running return false
-    if t.nextTick.LargerThan(next) return false
-    *next = t.nextTick
-    return true
+    return timeout.Set(&t.nextTick)
 }

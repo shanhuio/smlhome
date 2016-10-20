@@ -5,12 +5,8 @@ func main() {
 
     g := &theGame
     g.init()
-
     for {
         g.render()
-        g.pollClick()
-
-        now := timeNow()
-        g.forward(&now)
+        g.dispatch()
     }
 }

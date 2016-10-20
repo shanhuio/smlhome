@@ -18,6 +18,7 @@ struct game {
 
     state int
 
+    needRedraw bool
     ticker time.Ticker
     clickTimer time.Timer
 }
@@ -25,6 +26,11 @@ struct game {
 func (g *game) init() {
     g.r.init()
     g.reset()
+    g.redraw()
+}
+
+func (g *game) redraw() {
+    g.needRedraw = true
 }
 
 func (g *game) reset() {
@@ -41,6 +47,7 @@ func (g *game) reset() {
     g.state = waitForP1
     g.failedTries = 0
     g.ticker.Clear()
+    g.redraw()
 }
 
 func (g *game) message() string {
@@ -56,6 +63,8 @@ func (g *game) message() string {
 }
 
 func (g *game) render() {
+    if !g.needRedraw return
+
     var prop renderProp
     prop.message = g.message()
     prop.cards = g.cards[:]
@@ -63,6 +72,7 @@ func (g *game) render() {
     prop.nsecond = g.ticker.N()
 
     g.r.render(&prop)
+    g.needRedraw = false
 }
 
 func (g *game) clickable(p int) bool {
@@ -123,79 +133,45 @@ func (g *game) clickResult() {
     g.state = waitForP1
 }
 
-func (g *game) click(p int, valid bool) {
+func (g *game) click(p int, onCard bool) {
     if g.state == gameOver {
         g.reset()
         return
     }
 
     if g.state == waitForP1 {
-        if !valid return
+        if !onCard return
         g.clickP1(p)
     } else if g.state == waitForP2 {
-        if !valid return
+        if !onCard return
         g.clickP2(p)
     } else if g.state == waitForTimeout {
         g.clickResult()
-        if valid {
+        if onCard {
             g.clickP1(p)
         }
     } else {
         fmt.PrintStr("invalid state")
         panic()
     }
+    g.redraw()
 }
 
-func (g *game) forward(now *long.Long) {
-    g.clickTimer.Forward(now)
-    g.ticker.Forward(now)
+func (g *game) dispatch() {
+    var s selector
+    ev := s.Select(&g.ticker, &g.clickTimer)
+    if ev == eventNothing return
 
-    if g.clickTimer.Triggered() {
-        g.clickResult()
-    }
-}
-
-func (g *game) clickTimeout(next *long.Long) *long.Long {
-    next.SetImax()
-    ev := g.clickTimer.NextEvent(next)
-    ev = g.ticker.NextEvent(next) || ev
-    if !ev return nil
-
-    var now long.Long
-    vpc.TimeElapsed(&now)
-    if next.LargerThan(&now) {
-        next.Sub(&now)
-    } else {
-        next.Clear()
-    }
-    return next
-}
-
-var msgBuf [vpc.MaxLen]byte
-
-func (g *game) pollClick() bool {
-    var timeout long.Long
-
-    service, n, err := vpc.Poll(g.clickTimeout(&timeout), msgBuf[:])
-    if err == vpc.ErrTimeout return false
-
-    if err != 0 {
-        printInt(err)
-        panic()
-    }
-    msg := msgBuf[:n]
-
-    if service == vpc.Table {
-        p, ok := table.HandleClick(msg)
-        if !ok {
-            fmt.PrintStr("invalid table click\n")
-            panic()
+    if ev == eventTicker {
+        g.redraw() // need redraw the play time counter
+    } else if ev == eventTimer {
+        if g.state == waitForTimeout {
+            g.clickResult()
+            g.redraw()
         }
-
-        g.click(int(p), p != 255)
-        return true
+    } else if ev == eventClick {
+        g.click(s.LastClick())
+    } else {
+        fmt.PrintStr("invalid event received")
     }
-
-    fmt.PrintStr("unknown service input\n")
-    return false
 }

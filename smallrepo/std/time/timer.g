@@ -31,15 +31,19 @@ func (t *Timer) Triggered() bool {
     return t.triggered
 }
 
+func (t *Timer) Poll() bool {
+    if !t.triggered return false
+    t.triggered = false
+    return true
+}
+
 func (t *Timer) Clear() {
     t.running = false
     t.triggered = false
 }
 
-func (t *Timer) NextEvent(next *long.Long) bool {
+func (t *Timer) SetTimeout(timeout *Timeout) bool {
     if !t.running return false
     if t.triggered return false
-    if t.deadline.LargerThan(next) return false
-    *next = t.deadline
-    return true
+    return timeout.Set(&t.deadline)
 }

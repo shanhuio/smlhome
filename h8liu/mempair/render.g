@@ -16,6 +16,10 @@ func (r *render) init() {
 func (r *render) render(p *renderProp) {
     tab := &r.t
 
+    tab.Text(0).WriteString(p.message)
+    r.writeStats(tab.Text(1), p.failedTries)
+    r.writeTime(tab.Text(3), p.nsecond)
+
     ncard := len(p.cards)
     for i := 0; i < ncard; i++ {
         tc := tab.Card(i)
@@ -27,10 +31,6 @@ func (r *render) render(p *renderProp) {
 
         tc.Show(c.face, c.faceUp)
     }
-
-    tab.Text(0).WriteString(p.message)
-    r.writeStats(tab.Text(1), p.failedTries)
-    r.writeTime(tab.Text(3), p.nsecond)
 
     tab.Render()
 }
