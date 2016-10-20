@@ -1,7 +1,15 @@
+const textBufLen = 64
+
 struct text {
     pos byte
     w bytes.Buffer
-    buf [64]byte
+
+    current []byte
+
+    bufLeft [textBufLen]byte
+    bufRight [textBufLen]byte
+    rightActive bool
+
     dirty bool
 }
 
@@ -9,14 +17,26 @@ func (t *text) init(p byte) {
     t.pos = p
 }
 
+func (t *text) inactiveBuf() []byte {
+    if t.rightActive return t.bufLeft[:]
+    return t.bufRight[:]
+}
+
 func (t *text) Get() *bytes.Buffer {
-    t.w.Init(t.buf[:])
+    t.w.Init(t.inactiveBuf())
     t.dirty = true
     return &t.w
 }
 
 func (t *text) render() {
     if !t.dirty return
-    SetTextBytes(t.pos, t.w.Bytes())
+
+    bs := t.w.Bytes()
+    if !bytes.Equal(bs, t.current) {
+        SetTextBytes(t.pos, t.w.Bytes())
+        t.current = bs
+        t.rightActive = !t.rightActive
+    }
+
     t.dirty = false
 }
