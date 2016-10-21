@@ -45,7 +45,6 @@ func SetText(pos uint8, s string) {
     for i := 0; i < n; i++ {
         buf[3 + i] = byte(s[i])
     }
-
     call(buf)
 }
 
@@ -58,6 +57,5 @@ func SetTextBytes(pos uint8, bs []byte) {
     for i := 0; i < n; i++ {
         buf[3 + i] = bs[i]
     }
-
     call(buf)
 }

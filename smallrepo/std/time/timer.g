@@ -33,7 +33,7 @@ func (t *Timer) Triggered() bool {
 
 func (t *Timer) Poll() bool {
     if !t.triggered return false
-    t.triggered = false
+    t.Clear()
     return true
 }
 

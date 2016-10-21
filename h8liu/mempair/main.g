@@ -3,10 +3,11 @@ var levels [8]game
 func main() {
     fmt.PrintStr("Mem pair\n")
 
-    g := &levels[0]
-
+    var picker levelPicker
     for {
-        g.run()
+        level := picker.pick()
+
+        levels[level].run()
 
         // wait for a click
         var s selector
