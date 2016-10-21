@@ -14,7 +14,7 @@ func (t *Timeout) Set(in *long.Long) bool {
         t.t = *in
         return true
     }
-    
+
     if in.LargerThan(&t.t) return false
     t.t = *in
     return true
