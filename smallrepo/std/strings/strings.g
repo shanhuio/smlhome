@@ -6,3 +6,7 @@ func Equals(s1, s2 string) bool {
     }
     return true
 }
+
+func FromBytes(bs []byte) string {
+    return make([]char, len(bs), (*char)(&bs[0]))
+}

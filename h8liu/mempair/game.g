@@ -6,10 +6,12 @@ const (
 )
 
 struct game {
+    c *config
     r render
-    deck [nblock]card
 
+    deck [nblock]card
     cards [nblock]*card
+
     left int
     failedTries int
 
@@ -29,6 +31,10 @@ func (g *game) init() {
     g.redraw()
 }
 
+func (g *game) setConfig(c *config) {
+    g.c = c
+}
+
 func (g *game) redraw() {
     g.needRedraw = true
 }
@@ -37,11 +43,10 @@ func (g *game) reset() {
     for i := 0; i < nblock; i++ {
         c := &g.deck[i]
         g.cards[i] = c
-        c.face = 'A' + char(i / 2)
         c.faceUp = false
     }
 
-    shuffle(g.cards[:])
+    setup(g.c, g.cards[:])
 
     g.left = nblock / 2
     g.state = waitForP1
@@ -172,6 +177,20 @@ func (g *game) dispatch() {
     } else if ev == eventClick {
         g.click(s.LastClick())
     } else {
-        fmt.PrintStr("invalid event received")
+        fmt.PrintStr("invalid event received\n")
+    }
+}
+
+func (g *game) over() bool {
+    return g.state == gameOver
+}
+
+func (g *game) run() {
+    g.init()
+    g.render()
+
+    for !g.over() {
+        g.dispatch()
+        g.render()
     }
 }

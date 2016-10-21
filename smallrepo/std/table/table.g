@@ -1,35 +1,44 @@
-struct Table {
-    cards [ncard]Card
-    texts [ntext]text
+struct table {
+    cards [Ncard]card
+    texts [Ntext]text
     m dirtyMap
 }
 
-func (t *Table) Card(i int) *Card {
-    return &t.cards[i]
-}
-
-func (t *Table) Text(i int) *bytes.Buffer {
-    return t.texts[i].Get()
-}
-
-func (t *Table) Init() {
-    for i := 0; i < ncard; i++ {
+func (t *table) init() {
+    n := len(t.cards)
+    for i := 0; i < n; i++ {
         t.cards[i].init(byte(i), &t.m)
     }
-    for i := 0; i < ntext; i++ {
+
+    n = len(t.texts)
+    for i := 0; i < n; i++ {
         t.texts[i].init(byte(i))
     }
 }
 
-func (t *Table) Render() {
+func (t *table) update(p *Prop) {
+    n := len(t.cards)
+    for i := 0; i < n; i++ {
+        t.cards[i].update(&p.Cards[i])
+    }
+
+    n = len(t.texts)
+    for i := 0; i < n; i++ {
+        t.texts[i].get().WriteString(p.Texts[i])
+    }
+}
+
+func (t *table) render() {
     i := 0
     for {
         pos, ok := t.m.iter(&i)
         if !ok break
         t.cards[pos].render()
     }
+    t.m.clear()
 
-    for i := 0; i < ntext; i++ {
+    n := len(t.texts)
+    for i := 0; i < n; i++ {
         t.texts[i].render()
     }
 }

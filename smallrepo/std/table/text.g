@@ -22,7 +22,11 @@ func (t *text) inactiveBuf() []byte {
     return t.bufRight[:]
 }
 
-func (t *text) Get() *bytes.Buffer {
+func (t *text) clear() {
+    t.get()
+}
+
+func (t *text) get() *bytes.Buffer {
     t.w.Init(t.inactiveBuf())
     t.dirty = true
     return &t.w

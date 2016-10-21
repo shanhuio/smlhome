@@ -1,12 +1,15 @@
-var theGame game
+var levels [8]game
 
 func main() {
     fmt.PrintStr("Mem pair\n")
 
-    g := &theGame
-    g.init()
+    g := &levels[0]
+
     for {
-        g.render()
-        g.dispatch()
+        g.run()
+
+        // wait for a click
+        var s selector
+        s.Select(nil, nil)
     }
 }

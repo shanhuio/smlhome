@@ -1,6 +1,6 @@
 struct dirtyMap {
-    dirty [ncard]bool
-    blocks [ncard]byte
+    dirty [Ncard]bool
+    blocks [Ncard]byte
     n int
 }
 
@@ -11,7 +11,7 @@ func (m *dirtyMap) touch(p byte) {
     m.n++
 }
 
-func (m *dirtyMap) clean() {
+func (m *dirtyMap) clear() {
     for i := 0; i < m.n; i++ {
         m.dirty[m.blocks[i]] = false
     }

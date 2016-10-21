@@ -9,7 +9,12 @@ func (t *Timeout) Clear() {
 }
 
 func (t *Timeout) Set(in *long.Long) bool {
-    t.valid = true
+    if !t.valid {
+        t.valid = true
+        t.t = *in
+        return true
+    }
+    
     if in.LargerThan(&t.t) return false
     t.t = *in
     return true

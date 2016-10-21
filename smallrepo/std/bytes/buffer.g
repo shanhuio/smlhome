@@ -8,6 +8,10 @@ func (b *Buffer) Init(buf []byte) {
     b.n = 0
 }
 
+func (b *Buffer) Reset() {
+    b.n = 0
+}
+
 func (b *Buffer) Write(bs []byte) (int, int) {
     for i := 0; i < len(bs); i++ {
         err := b.WriteByte(bs[i])
@@ -18,6 +22,13 @@ func (b *Buffer) Write(bs []byte) (int, int) {
 
 func (b *Buffer) Bytes() []byte {
     return b.buf[:b.n]
+}
+
+func (b *Buffer) String() string {
+    bs := b.Bytes()
+    // TODO(h8liu): this is more like a hack
+    // maybe we should always use []byte as string?
+    return make([]char, len(bs), (*char)(&bs[0]))
 }
 
 func (b *Buffer) WriteByte(byt byte) int {

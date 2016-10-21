@@ -18,7 +18,8 @@ func (s *selector) LastClick() (int, bool) {
 
 func (s *selector) pollClick(timeout *time.Timeout) bool {
     now := timeNow()
-    service, n, err := vpc.Poll(timeout.Get(&now), msgBuf[:])
+    wait := timeout.Get(&now)
+    service, n, err := vpc.Poll(wait, msgBuf[:])
     if err == vpc.ErrTimeout return false
     if err != 0 {
         printInt(err)
@@ -41,7 +42,7 @@ func (s *selector) pollClick(timeout *time.Timeout) bool {
     return false
 }
 
-func (s *selector) Select(ticker *time.Ticker, timer *time.Timer) int {
+func (s *selector) poll(ticker *time.Ticker, timer *time.Timer) int {
     // forward all the timers first
     now := timeNow()
     if timer != nil {
@@ -53,6 +54,12 @@ func (s *selector) Select(ticker *time.Ticker, timer *time.Timer) int {
 
     if timer != nil && timer.Poll() return eventTimer
     if ticker != nil && ticker.Poll() return eventTicker
+    return eventNothing
+}
+
+func (s *selector) Select(ticker *time.Ticker, timer *time.Timer) int {
+    ret := s.poll(ticker, timer)
+    if ret != eventNothing return ret
 
     var timeout time.Timeout
     if timer != nil {
@@ -63,5 +70,5 @@ func (s *selector) Select(ticker *time.Ticker, timer *time.Timer) int {
     }
 
     if s.pollClick(&timeout) return eventClick
-    return eventNothing
+    return s.poll(ticker, timer)
 }

@@ -1,5 +1,8 @@
 struct render {
-    t table.Table
+    buf1 [64]byte
+    buf2 [64]byte
+    w1 bytes.Buffer
+    w2 bytes.Buffer
 }
 
 struct renderProp {
@@ -10,29 +13,33 @@ struct renderProp {
 }
 
 func (r *render) init() {
-    r.t.Init()
+    r.w1.Init(r.buf1[:])
+    r.w2.Init(r.buf2[:])
 }
 
 func (r *render) render(p *renderProp) {
-    tab := &r.t
+    r.w1.Reset()
+    r.writeStats(&r.w1, p.failedTries)
 
-    tab.Text(0).WriteString(p.message)
-    r.writeStats(tab.Text(1), p.failedTries)
-    r.writeTime(tab.Text(3), p.nsecond)
+    r.w2.Reset()
+    r.writeTime(&r.w2, p.nsecond)
+
+    var tp table.Prop
+    tp.Texts[0] = p.message
+    tp.Texts[1] = r.w1.String()
+    tp.Texts[3] = r.w2.String()
 
     ncard := len(p.cards)
     for i := 0; i < ncard; i++ {
-        tc := tab.Card(i)
         c := p.cards[i]
-        if c == nil {
-            tc.Hide()
-            continue
-        }
-
-        tc.Show(c.face, c.faceUp)
+        if c == nil continue
+        pc := &tp.Cards[i]
+        pc.Visible = true
+        pc.Face = c.face
+        pc.FaceUp = c.faceUp
     }
 
-    tab.Render()
+    table.Render(&tp)
 }
 
 func (r *render) writeStats(w *bytes.Buffer, failedTries int) {
