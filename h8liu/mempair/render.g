@@ -9,7 +9,10 @@ struct renderProp {
     cards []*card
     message string
     failedTries int
+    failLimit int
     nsecond int
+    countDown bool
+    timeout bool
 }
 
 func (r *render) init() {
@@ -19,10 +22,14 @@ func (r *render) init() {
 
 func (r *render) render(p *renderProp) {
     r.w1.Reset()
-    r.writeStats(&r.w1, p.failedTries)
+    r.writeStats(&r.w1, p.failedTries, p.failLimit)
 
     r.w2.Reset()
-    r.writeTime(&r.w2, p.nsecond)
+    if p.timeout {
+        r.w2.WriteString("Time is up")
+    } else {
+        r.writeTime(&r.w2, p.nsecond, p.countDown)
+    }
 
     var tp table.Prop
     tp.Texts[0] = p.message
@@ -42,12 +49,29 @@ func (r *render) render(p *renderProp) {
     table.Render(&tp)
 }
 
-func (r *render) writeStats(w *bytes.Buffer, failedTries int) {
+func (r *render) writeStats(w *bytes.Buffer, failedTries, failLimit int) {
     w.WriteString("failed tries: ")
     fmt.FprintInt(w, failedTries)
+    if failLimit > 0 {
+        w.WriteString("/")
+        fmt.FprintInt(w, failLimit)
+    }
 }
 
-func (r *render) writeTime(w *bytes.Buffer, t int) {
-    fmt.FprintInt(w, t)
-    w.WriteString(" sec")
+func (r *render) writeTime(w *bytes.Buffer, t int, countDown bool) {
+    if !countDown {
+        fmt.FprintInt(w, t)
+        if t <= 0 {
+            w.WriteString(" second")
+        } else {
+            w.WriteString(" seconds")
+        }
+    } else {
+        fmt.FprintInt(w, t)
+        if t <= 0 {
+            w.WriteString(" second left")
+        } else {
+            w.WriteString(" seconds left")
+        }
+    }
 }

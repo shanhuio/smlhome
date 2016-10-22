@@ -1,28 +1,31 @@
 struct config {
-    setupFunc func(cards []*card)
+    noShuffle bool
+    face char
+    timeLimit int
+    failLimit int
+    randSeed uint
+
+    setupFunc func(cards []*card, base char)
 }
 
-func basicFaces(cards []*card) {
+func (c *config) getFace() char {
+    if c.face == char(0) return 'A'
+    return c.face
+}
+
+func (c *config) getSeed() uint {
+    if c.randSeed == 0 return misc.Rand()
+    return c.randSeed
+}
+
+func (c *config) setup(cards []*card) {
+    base := c.getFace()
     n := len(cards)
     for i := 0; i < n; i++ {
-        cards[i].face = 'A' + char(i / 2)
-    }
-}
-
-func defaultSetup(cards []*card) {
-    basicFaces(cards)
-    shuffle(cards)
-}
-
-func easySetup(cards []*card) {
-    basicFaces(cards)
-}
-
-func setup(c *config, cards []*card) {
-    if c == nil || c.setupFunc == nil {
-        defaultSetup(cards)
-        return
+        cards[i].face = base + char(i / 2)
     }
 
-    c.setupFunc(cards)
+    if !c.noShuffle {
+        shuffle(cards, c.getSeed())
+    }
 }

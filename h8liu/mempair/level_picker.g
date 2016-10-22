@@ -1,4 +1,4 @@
-const nlevel = 2
+const nlevel = 5
 
 const (
     statePicking = 0
@@ -9,6 +9,8 @@ const (
 
 struct levelPicker {
     level int
+    reached int
+
     state int
     timer time.Timer
 }
@@ -27,7 +29,9 @@ func (p *levelPicker) render() {
             c := &prop.Cards[i]
             c.Visible = true
             c.Face = '1' + char(i)
-            c.FaceUp = true
+            if i <= p.reached {
+                c.FaceUp = true
+            }
         }
     } else if p.state == statePicked {
         c := &prop.Cards[p.level]
@@ -53,7 +57,7 @@ func (p *levelPicker) dispatch() {
     if ev == eventClick {
         if p.state == statePicking {
             pos, ok := s.LastClick()
-            if ok && pos < nlevel {
+            if ok && pos < nlevel && pos <= p.reached {
                 p.state = statePicked
                 p.level = pos
                 p.waitAWhile()
@@ -71,6 +75,12 @@ func (p *levelPicker) dispatch() {
 
 func (p *levelPicker) done() bool {
     return p.state == stateDone
+}
+
+func (p *levelPicker) reach(i int) {
+    if i > p.reached {
+        p.reached = i
+    }
 }
 
 func (p *levelPicker) pick() int {

@@ -2,7 +2,8 @@ const (
     waitForP1 = 0
     waitForP2 = 1
     waitForTimeout = 2
-    gameOver = 3
+    gameWin = 3
+    gameLost = 4
 )
 
 struct game {
@@ -25,14 +26,10 @@ struct game {
     clickTimer time.Timer
 }
 
-func (g *game) init() {
+func (g *game) init(c *config) {
+    g.c = c
     g.r.init()
     g.reset()
-    g.redraw()
-}
-
-func (g *game) setConfig(c *config) {
-    g.c = c
 }
 
 func (g *game) redraw() {
@@ -46,7 +43,7 @@ func (g *game) reset() {
         c.faceUp = false
     }
 
-    setup(g.c, g.cards[:])
+    g.c.setup(g.cards[:])
 
     g.left = nblock / 2
     g.state = waitForP1
@@ -62,7 +59,8 @@ func (g *game) message() string {
         if g.paired return "Paired!"
         return "Mispaired."
     }
-    if g.state == gameOver return "You won!"
+    if g.state == gameWin return "You won!"
+    if g.state == gameLost return "You lost."
     panic()
     return ""
 }
@@ -74,7 +72,18 @@ func (g *game) render() {
     prop.message = g.message()
     prop.cards = g.cards[:]
     prop.failedTries = g.failedTries
+    prop.failLimit = g.c.failLimit
     prop.nsecond = g.ticker.N()
+
+    if g.c.timeLimit > 0 {
+        printInt(prop.nsecond)
+        printInt(g.c.timeLimit)
+        prop.countDown = true
+        prop.nsecond = g.c.timeLimit - prop.nsecond
+        if prop.nsecond < 0 {
+            prop.timeout = true
+        }
+    }
 
     g.r.render(&prop)
     g.needRedraw = false
@@ -126,7 +135,7 @@ func (g *game) clickResult() {
         g.cards[g.p2] = nil
         g.left--
         if g.left <= 0 {
-            g.state = gameOver
+            g.state = gameWin
             g.ticker.Stop()
             return
         }
@@ -134,15 +143,16 @@ func (g *game) clickResult() {
         g.cards[g.p1].faceUp = false
         g.cards[g.p2].faceUp = false
         g.failedTries++
+        if g.c.failLimit > 0 && g.failedTries >= g.c.failLimit {
+            g.state = gameLost
+            return
+        }
     }
     g.state = waitForP1
 }
 
 func (g *game) click(p int, onCard bool) {
-    if g.state == gameOver {
-        g.reset()
-        return
-    }
+    if g.over() return
 
     if g.state == waitForP1 {
         if !onCard return
@@ -152,7 +162,7 @@ func (g *game) click(p int, onCard bool) {
         g.clickP2(p)
     } else if g.state == waitForTimeout {
         g.clickResult()
-        if onCard {
+        if onCard && !g.over() {
             g.clickP1(p)
         }
     } else {
@@ -168,6 +178,12 @@ func (g *game) dispatch() {
     if ev == eventNothing return
 
     if ev == eventTicker {
+        if g.c.timeLimit > 0 {
+            nsec := g.ticker.N()
+            if nsec > g.c.timeLimit {
+                g.state = gameLost
+            }
+        }
         g.redraw() // need redraw the play time counter
     } else if ev == eventTimer {
         if g.state == waitForTimeout {
@@ -182,15 +198,17 @@ func (g *game) dispatch() {
 }
 
 func (g *game) over() bool {
-    return g.state == gameOver
+    return g.state == gameWin || g.state == gameLost
 }
 
-func (g *game) run() {
-    g.init()
+func (g *game) run() bool {
+    g.reset()
     g.render()
 
     for !g.over() {
         g.dispatch()
         g.render()
     }
+
+    return g.state == gameWin
 }
