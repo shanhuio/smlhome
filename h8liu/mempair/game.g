@@ -125,28 +125,38 @@ func (g *game) clickP2(p int) {
     g.paired = (g.cards[g.p1].face == c.face)
     g.state = waitForTimeout
     g.startClickTimer()
+    g.pairCheck()
 }
 
-func (g *game) clickResult() {
-    g.clickTimer.Clear()
-
+func (g *game) pairCheck() {
     if g.paired { // paired
-        g.cards[g.p1] = nil
-        g.cards[g.p2] = nil
         g.left--
         if g.left <= 0 {
-            g.state = gameWin
             g.ticker.Stop()
-            return
         }
     } else {
-        g.cards[g.p1].faceUp = false
-        g.cards[g.p2].faceUp = false
         g.failedTries++
         if g.c.failLimit > 0 && g.failedTries >= g.c.failLimit {
             g.state = gameLost
             return
         }
+    }
+}
+
+func (g *game) clickResult() {
+    g.clickTimer.Clear()
+
+    if g.paired {
+        g.cards[g.p1] = nil
+        g.cards[g.p2] = nil
+    } else {
+        g.cards[g.p1].faceUp = false
+        g.cards[g.p2].faceUp = false
+    }
+
+    if g.left <= 0 {
+        g.state = gameWin
+        return
     }
     g.state = waitForP1
 }
