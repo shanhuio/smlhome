@@ -15,6 +15,7 @@ struct game {
 
     left int
     failedTries int
+    bonusTime int
 
     p1, p2 int
     paired bool
@@ -36,6 +37,28 @@ func (g *game) redraw() {
     g.needRedraw = true
 }
 
+func setup(c *config, cards []*card) {
+    base := c.getFace()
+    n := len(cards)
+    for i := 0; i < n; i++ {
+        cards[i].face = base + char(i / 2)
+    }
+
+    if c.timeBonusCards && n >= 6 {
+        start := n - 6
+        for i := 0; i < 6; i++ {
+            cards[start + i].face = 'X' + char(i / 2)
+        }
+    } else if c.findSpecial && n >= 2 {
+        cards[n - 2].face = '*'
+        cards[n - 1].face = '*'
+    }
+
+    if !c.noShuffle {
+        shuffle(cards, c.getSeed())
+    }
+}
+
 func (g *game) reset() {
     for i := 0; i < nblock; i++ {
         c := &g.deck[i]
@@ -43,11 +66,12 @@ func (g *game) reset() {
         c.faceUp = false
     }
 
-    g.c.setup(g.cards[:])
+    setup(g.c, g.cards[:])
 
     g.left = nblock / 2
     g.state = waitForP1
     g.failedTries = 0
+    g.bonusTime = 0
     g.ticker.Clear()
     g.redraw()
 }
@@ -76,10 +100,9 @@ func (g *game) render() {
     prop.nsecond = g.ticker.N()
 
     if g.c.timeLimit > 0 {
-        printInt(prop.nsecond)
-        printInt(g.c.timeLimit)
+        limit := g.timeLimit()
         prop.countDown = true
-        prop.nsecond = g.c.timeLimit - prop.nsecond
+        prop.nsecond = limit - prop.nsecond
         if prop.nsecond < 0 {
             prop.timeout = true
         }
@@ -128,18 +151,38 @@ func (g *game) clickP2(p int) {
     g.pairCheck()
 }
 
+func (g *game) failedTry() {
+    g.failedTries++
+    if g.c.failLimit > 0 && g.failedTries >= g.c.failLimit {
+        g.state = gameLost
+        return
+    }
+}
+
 func (g *game) pairCheck() {
+    if g.c.findSpecial {
+        if g.paired {
+            face := g.cards[g.p1].face
+            if face != '*' {
+                g.paired = false // does not count
+            }
+        } else {
+            g.failedTry()
+        }
+        return
+    }
+
     if g.paired { // paired
         g.left--
         if g.left <= 0 {
             g.ticker.Stop()
         }
-    } else {
-        g.failedTries++
-        if g.c.failLimit > 0 && g.failedTries >= g.c.failLimit {
-            g.state = gameLost
-            return
+        face := g.cards[g.p1].face
+        if face >= 'X' && face <= 'Z' {
+            g.bonusTime += 10
         }
+    } else {
+        g.failedTry()
     }
 }
 
@@ -152,6 +195,11 @@ func (g *game) clickResult() {
     } else {
         g.cards[g.p1].faceUp = false
         g.cards[g.p2].faceUp = false
+    }
+
+    if g.c.findSpecial && g.paired {
+        g.state = gameWin
+        return
     }
 
     if g.left <= 0 {
@@ -182,15 +230,20 @@ func (g *game) click(p int, onCard bool) {
     g.redraw()
 }
 
+func (g *game) timeLimit() int {
+    return g.c.timeLimit + g.bonusTime
+}
+
 func (g *game) dispatch() {
     var s selector
     ev := s.Select(&g.ticker, &g.clickTimer)
     if ev == eventNothing return
 
     if ev == eventTicker {
-        if g.c.timeLimit > 0 {
+        limit := g.timeLimit()
+        if limit > 0 {
             nsec := g.ticker.N()
-            if nsec > g.c.timeLimit {
+            if nsec > limit {
                 g.state = gameLost
             }
         }

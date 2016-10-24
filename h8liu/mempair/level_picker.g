@@ -1,4 +1,4 @@
-const nlevel = 5
+const nlevel = 7
 
 const (
     statePicking = 0

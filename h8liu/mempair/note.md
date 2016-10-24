@@ -1,12 +1,12 @@
-- add a time limit (done)
-- change the letter (done)
-- not randamized, but cannot be wrong (done)
-
 - change the size
-- special card (+time bonus)
 - items find pair immediately 
 - break the rule (three but not pair)
 - 连连看
-- find ace
 - moving ? need animation support
 - color?
+
+- add a time limit (done)
+- change the letter (done)
+- not randamized, but cannot be wrong (done)
+- special card (+time bonus) (done)
+- find ace (done)

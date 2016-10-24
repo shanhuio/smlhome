@@ -13,6 +13,12 @@ func main() {
     configs[4].failLimit = 3
     configs[4].randSeed = 1
 
+    configs[5].timeBonusCards = true
+    configs[5].timeLimit = 30
+
+    configs[6].timeLimit = 30
+    configs[6].findSpecial = true
+
     for i := 0; i < len(levels); i++ {
         levels[i].init(&configs[i])
     }
