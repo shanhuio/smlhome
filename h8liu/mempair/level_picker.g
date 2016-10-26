@@ -24,7 +24,7 @@ func (p *levelPicker) render() {
     var prop table.Prop
 
     if p.state == statePicking {
-        prop.Texts[0] = "Pick a level."
+        prop.Texts[0] = "Click a number to pick a level."
         for i := 0; i < nlevel; i++ {
             c := &prop.Cards[i]
             c.Visible = true
