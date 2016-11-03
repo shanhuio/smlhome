@@ -12,5 +12,12 @@
             { "Dir": "smallrepo/std", "Space": "h8liu:a8836508062d"},
             { "Dir": "h8liu/mempair", "Space": "h8liu:e95a91b874d5"}
         ]
+    },
+    "h8i": {
+        "Host": "http://localhost:3356",
+        "Mirrors": [
+            { "Dir": "smallrepo/std", "Space": "h8liu:9c44c2173964"},
+            { "Dir": "h8liu/mempair", "Space": "h8liu:f007593a0ada"}
+        ]
     }
 }
