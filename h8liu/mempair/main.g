@@ -24,7 +24,7 @@ func main() {
     }
 
     var picker levelPicker
-    // picker.reach(nlevel)
+    picker.reach(nlevel)
 
     for {
         level := picker.pick()

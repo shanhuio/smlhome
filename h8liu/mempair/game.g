@@ -1,11 +1,3 @@
-const (
-    waitForP1 = 0
-    waitForP2 = 1
-    waitForTimeout = 2
-    gameWin = 3
-    gameLost = 4
-)
-
 struct game {
     c *config
     r render
@@ -19,6 +11,7 @@ struct game {
 
     p1, p2 int
     paired bool
+    pairedFace char
 
     state int
 
@@ -35,28 +28,6 @@ func (g *game) init(c *config) {
 
 func (g *game) redraw() {
     g.needRedraw = true
-}
-
-func setup(c *config, cards []*card) {
-    base := c.getFace()
-    n := len(cards)
-    for i := 0; i < n; i++ {
-        cards[i].face = base + char(i / 2)
-    }
-
-    if c.timeBonusCards && n >= 6 {
-        start := n - 6
-        for i := 0; i < 6; i++ {
-            cards[start + i].face = 'X' + char(i / 2)
-        }
-    } else if c.findSpecial && n >= 2 {
-        cards[n - 2].face = '*'
-        cards[n - 1].face = '*'
-    }
-
-    if !c.noShuffle {
-        shuffle(cards, c.getSeed())
-    }
 }
 
 func (g *game) reset() {
@@ -146,6 +117,12 @@ func (g *game) clickP2(p int) {
     c := g.cards[p]
     c.faceUp = true
     g.paired = (g.cards[g.p1].face == c.face)
+    if g.c.findSpecial {
+        g.paired = g.paired && (c.face == '*')
+    }
+    if g.paired {
+        g.pairedFace = c.face
+    }
     g.state = waitForTimeout
     g.startClickTimer()
     g.pairCheck()
@@ -160,29 +137,23 @@ func (g *game) failedTry() {
 }
 
 func (g *game) pairCheck() {
-    if g.c.findSpecial {
-        if g.paired {
-            face := g.cards[g.p1].face
-            if face != '*' {
-                g.paired = false // does not count
-            }
-        } else {
-            g.failedTry()
-        }
+    if !g.paired {
+        g.failedTry()
         return
     }
 
-    if g.paired { // paired
-        g.left--
-        if g.left <= 0 {
-            g.ticker.Stop()
-        }
-        face := g.cards[g.p1].face
-        if face >= 'X' && face <= 'Z' {
-            g.bonusTime += 10
-        }
-    } else {
-        g.failedTry()
+    if g.c.findSpecial {
+        g.ticker.Stop()
+        return
+    }
+
+    g.left--
+    if g.left <= 0 {
+        g.ticker.Stop()
+    }
+    face := g.pairedFace
+    if face >= 'X' && face <= 'Z' {
+        g.bonusTime += 10
     }
 }
 
@@ -197,12 +168,7 @@ func (g *game) clickResult() {
         g.cards[g.p2].faceUp = false
     }
 
-    if g.c.findSpecial && g.paired {
-        g.state = gameWin
-        return
-    }
-
-    if g.left <= 0 {
+    if g.left <= 0 || (g.c.findSpecial && g.paired) {
         g.state = gameWin
         return
     }
