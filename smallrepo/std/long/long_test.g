@@ -11,4 +11,8 @@ func TestUdiv1e9() {
     lo.Set(0x2, 0x540be401) // 1e10 + 1
     lo.Udiv1e9()
     assert(lo.Hi == 0 && lo.Lo == 10)
+
+    lo.Set(0, 1000000000)
+    lo.UmulU16(1)
+    assert(lo.Hi == 0 && lo.Lo == 1000000000)
 }

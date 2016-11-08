@@ -44,17 +44,17 @@ func (p *levelPicker) render() {
 }
 
 func (p *levelPicker) waitAWhile() {
-    t := timeNow()
+    t := time.Now()
     t.Add(&aWhile)
     p.timer.SetDeadline(&t)
 }
 
 func (p *levelPicker) dispatch() {
-    var s selector
+    var s events.Selector
     ev := s.Select(nil, &p.timer)
-    if ev == eventNothing return
+    if ev == events.Nothing return
 
-    if ev == eventClick {
+    if ev == events.Click {
         if p.state == statePicking {
             pos, ok := s.LastClick()
             if ok && pos < nlevel && pos <= p.reached {
@@ -63,7 +63,7 @@ func (p *levelPicker) dispatch() {
                 p.waitAWhile()
             }
         }
-    } else if ev == eventTimer {
+    } else if ev == events.Timer {
         if p.state == statePicked {
             p.state = stateDisappearing
             p.waitAWhile()

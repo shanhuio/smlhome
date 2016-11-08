@@ -1,23 +1,23 @@
-struct selector {
+const (
+    Nothing = 0
+    Click = 1
+    Timer = 2
+    Ticker = 3
+)
+
+struct Selector {
     click int
     clickValid bool
 }
 
-const (
-    eventNothing = 0
-    eventClick = 1
-    eventTimer = 2
-    eventTicker = 3
-)
-
 var msgBuf [16]byte
 
-func (s *selector) LastClick() (int, bool) {
+func (s *Selector) LastClick() (int, bool) {
     return s.click, s.clickValid
 }
 
-func (s *selector) pollClick(timeout *time.Timeout) bool {
-    now := timeNow()
+func (s *Selector) pollClick(timeout *time.Timeout) bool {
+    now := time.Now()
     wait := timeout.Get(&now)
     service, n, err := vpc.Poll(wait, msgBuf[:])
     if err == vpc.ErrTimeout return false
@@ -42,9 +42,9 @@ func (s *selector) pollClick(timeout *time.Timeout) bool {
     return false
 }
 
-func (s *selector) poll(ticker *time.Ticker, timer *time.Timer) int {
+func (s *Selector) poll(ticker *time.Ticker, timer *time.Timer) int {
     // forward all the timers first
-    now := timeNow()
+    now := time.Now()
     if timer != nil {
         timer.Forward(&now)
     }
@@ -52,14 +52,14 @@ func (s *selector) poll(ticker *time.Ticker, timer *time.Timer) int {
         ticker.Forward(&now)
     }
 
-    if timer != nil && timer.Poll() return eventTimer
-    if ticker != nil && ticker.Poll() return eventTicker
-    return eventNothing
+    if timer != nil && timer.Poll() return Timer
+    if ticker != nil && ticker.Poll() return Ticker
+    return Nothing
 }
 
-func (s *selector) Select(ticker *time.Ticker, timer *time.Timer) int {
+func (s *Selector) Select(ticker *time.Ticker, timer *time.Timer) int {
     ret := s.poll(ticker, timer)
-    if ret != eventNothing return ret
+    if ret != Nothing return ret
 
     var timeout time.Timeout
     if timer != nil {
@@ -69,6 +69,6 @@ func (s *selector) Select(ticker *time.Ticker, timer *time.Timer) int {
         ticker.SetTimeout(&timeout)
     }
 
-    if s.pollClick(&timeout) return eventClick
+    if s.pollClick(&timeout) return Click
     return s.poll(ticker, timer)
 }

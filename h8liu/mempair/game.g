@@ -98,13 +98,13 @@ func (g *game) clickP1(p int) {
     g.state = waitForP2
 
     if !g.started() { // first click, game starts.
-        now := timeNow()
+        now := time.Now()
         g.ticker.Start(&now, &oneSec)
     }
 }
 
 func (g *game) startClickTimer() {
-    t := timeNow()
+    t := time.Now()
     t.Add(&oneSec)
     g.clickTimer.SetDeadline(&t)
 }
@@ -201,11 +201,11 @@ func (g *game) timeLimit() int {
 }
 
 func (g *game) dispatch() {
-    var s selector
+    var s events.Selector
     ev := s.Select(&g.ticker, &g.clickTimer)
-    if ev == eventNothing return
+    if ev == events.Nothing return
 
-    if ev == eventTicker {
+    if ev == events.Ticker {
         limit := g.timeLimit()
         if limit > 0 {
             nsec := g.ticker.N()
@@ -214,12 +214,12 @@ func (g *game) dispatch() {
             }
         }
         g.redraw() // need redraw the play time counter
-    } else if ev == eventTimer {
+    } else if ev == events.Timer {
         if g.state == waitForTimeout {
             g.clickResult()
             g.redraw()
         }
-    } else if ev == eventClick {
+    } else if ev == events.Click {
         g.click(s.LastClick())
     } else {
         fmt.PrintStr("invalid event received\n")

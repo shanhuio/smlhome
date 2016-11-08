@@ -183,7 +183,7 @@ func (lo *Long) UmulU16(v uint32) {
     var c1, c2, c3, c uint32
     c1, ll = hiLo(ll * v)
     c2, lh = hiLo(lh * v)
-    c3, hl = hiLo(lh * v)
+    c3, hl = hiLo(hl * v)
     c, hh = hiLo(hh * v)
 
     c, lh = hiLo(lh + c1)

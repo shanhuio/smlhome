@@ -24,7 +24,7 @@ func main() {
     }
 
     var picker levelPicker
-    picker.reach(nlevel)
+    // picker.reach(nlevel)
 
     for {
         level := picker.pick()
@@ -34,7 +34,7 @@ func main() {
         }
 
         // wait for a click
-        var s selector
+        var s events.Selector
         s.Select(nil, nil)
     }
 }
