@@ -10,7 +10,8 @@
         "Host": "https://test.smallrepo.com",
         "Mirrors": [
             { "Dir": "smallrepo/std", "Space": "h8liu:a8836508062d"},
-            { "Dir": "h8liu/mempair", "Space": "h8liu:e95a91b874d5"}
+            { "Dir": "h8liu/mempair", "Space": "h8liu:e95a91b874d5"},
+            { "Dir": "vichare/whack", "Space": "vichare:9f9d7769aad2"}
         ]
     },
     "h8i": {
