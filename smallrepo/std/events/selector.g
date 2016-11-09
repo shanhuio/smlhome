@@ -6,14 +6,14 @@ const (
 )
 
 struct Selector {
-    click int
-    clickValid bool
+    clickWhat int
+    clickPos int
 }
 
 var msgBuf [16]byte
 
-func (s *Selector) LastClick() (int, bool) {
-    return s.click, s.clickValid
+func (s *Selector) LastClick() (int, int) {
+    return s.clickWhat, s.clickPos
 }
 
 func (s *Selector) pollClick(timeout *time.Timeout) bool {
@@ -28,13 +28,9 @@ func (s *Selector) pollClick(timeout *time.Timeout) bool {
 
     msg := msgBuf[:n]
     if service == vpc.Table {
-        p, ok := table.HandleClick(msg) // parse the message
-        if !ok {
-            fmt.PrintStr("invalid table click message\n")
-            panic()
-        }
-        s.click = int(p)
-        s.clickValid = p != 255
+        what, pos := table.HandleClick(msg) // parse the message
+        s.clickWhat = int(what)
+        s.clickPos = int(pos)
         return true
     }
 
