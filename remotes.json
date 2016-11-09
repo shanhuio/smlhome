@@ -3,7 +3,8 @@
         "Host": "http://localhost:3356",
         "Mirrors": [
             { "Dir": "smallrepo/std", "Space": "h8liu:322e43792e48"},
-            { "Dir": "h8liu/mempair", "Space": "h8liu:2af5a6f19b7a"}
+            { "Dir": "h8liu/mempair", "Space": "h8liu:2af5a6f19b7a"},
+            { "Dir": "vichare/whack", "Space": "vichare:a8503c0c3dd4"}
         ]
     },
     "s0": {
