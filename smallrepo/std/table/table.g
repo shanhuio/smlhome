@@ -15,6 +15,11 @@ func (t *table) init() {
     for i := 0; i < n; i++ {
         t.texts[i].init(byte(i))
     }
+
+    n = len(t.buttons)
+    for i := 0; i < n; i++ {
+        t.buttons[i].init(byte(i))
+    }
 }
 
 func (t *table) update(p *Prop) {
@@ -46,5 +51,10 @@ func (t *table) render() {
     n := len(t.texts)
     for i := 0; i < n; i++ {
         t.texts[i].render()
+    }
+
+    n = len(t.buttons)
+    for i := 0; i < n; i++ {
+        t.buttons[i].render()
     }
 }

@@ -33,8 +33,22 @@ func main() {
             picker.reach(level + 1)
         }
 
-        // wait for a click
-        var s events.Selector
-        s.Select(nil, nil)
+        gap()
+    }
+}
+
+func gap() {
+    var prop table.Prop
+    table.Render(&prop)
+    var timer time.Timer
+    t := time.Now()
+    t.Add(&aWhile)
+    timer.SetDeadline(&t)
+    var s events.Selector
+    for {
+        ev := s.Select(nil, &timer)
+        if ev == events.Timer {
+            break
+        }
     }
 }

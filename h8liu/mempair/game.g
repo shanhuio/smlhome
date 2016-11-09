@@ -18,6 +18,7 @@ struct game {
     needRedraw bool
     ticker time.Ticker
     clickTimer time.Timer
+    back bool
 }
 
 func (g *game) init(c *config) {
@@ -45,6 +46,7 @@ func (g *game) reset() {
     g.bonusTime = 0
     g.ticker.Clear()
     g.redraw()
+    g.back = false
 }
 
 func (g *game) message() string {
@@ -221,7 +223,18 @@ func (g *game) dispatch() {
         }
     } else if ev == events.Click {
         what, pos := s.LastClick()
-        g.click(pos, what == table.OnCard)
+        if what == table.OnCard {
+            g.click(pos, true)
+        } else if what == table.OnButton {
+            fmt.PrintInt(pos)
+            if pos == 0 {
+                g.reset()
+            } else if pos == 1 {
+                g.back = true
+            }
+        } else if what == table.OnTable {
+            g.click(0, false)
+        }
     } else {
         fmt.PrintStr("invalid event received\n")
     }
@@ -235,7 +248,7 @@ func (g *game) run() bool {
     g.reset()
     g.render()
 
-    for !g.over() {
+    for !g.back {
         g.dispatch()
         g.render()
     }

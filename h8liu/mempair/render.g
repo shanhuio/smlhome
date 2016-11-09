@@ -36,6 +36,11 @@ func (r *render) render(p *renderProp) {
     tp.Texts[1] = r.w1.String()
     tp.Texts[3] = r.w2.String()
 
+    tp.Buttons[0].Text = "Reset"
+    tp.Buttons[0].Visible = true
+    tp.Buttons[1].Text = "Back"
+    tp.Buttons[1].Visible = true
+
     ncard := len(p.cards)
     for i := 0; i < ncard; i++ {
         c := p.cards[i]
@@ -74,6 +79,4 @@ func (r *render) writeTime(w *bytes.Buffer, t int, countDown bool) {
             w.WriteString(" seconds left")
         }
     }
-    fmt.PrintStr(w.String())
-    fmt.Println()
 }
