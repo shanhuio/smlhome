@@ -56,8 +56,8 @@ func (p *levelPicker) dispatch() {
 
     if ev == events.Click {
         if p.state == statePicking {
-            pos, ok := s.LastClick()
-            if ok && pos < nlevel && pos <= p.reached {
+            what, pos := s.LastClick()
+            if what == table.OnCard && pos < nlevel && pos <= p.reached {
                 p.state = statePicked
                 p.level = pos
                 p.waitAWhile()

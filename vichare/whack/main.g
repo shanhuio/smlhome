@@ -59,14 +59,17 @@ func main() {
                 c.Face = 'A' + char(rand.IntN(26))
                 c.FaceUp = true
             } else if ev == events.Click {
-                pos, valid := s.LastClick()
-                if valid && prop.Cards[pos].Visible && prop.Cards[pos].FaceUp {
-                    // To make sure not count twice when click very fast
-                    score++
-                    prop.Texts[0] = i2a(i2aBuf[:], score)
-                    pool.Append(pos)
-                    prop.Cards[pos].Visible = false
-                    c = nil
+                what, pos := s.LastClick()
+                if what == table.OnCard {
+                    clicked := &prop.Cards[pos]
+                    if clicked.Visible && clicked.FaceUp {
+                        // To make sure not count twice when click very fast
+                        score++
+                        prop.Texts[0] = i2a(i2aBuf[:], score)
+                        pool.Append(pos)
+                        prop.Cards[pos].Visible = false
+                        c = nil
+                    }
                 }
             }
         }

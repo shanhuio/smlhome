@@ -220,7 +220,8 @@ func (g *game) dispatch() {
             g.redraw()
         }
     } else if ev == events.Click {
-        g.click(s.LastClick())
+        what, pos := s.LastClick()
+        g.click(pos, what == table.OnCard)
     } else {
         fmt.PrintStr("invalid event received\n")
     }
