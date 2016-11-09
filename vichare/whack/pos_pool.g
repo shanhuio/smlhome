@@ -18,7 +18,7 @@ func (p *PosPool) PopRand() int {
         panic()
     }
 
-    pick := misc.Rand() % uint(p.size)
+    pick := rand.IntN(p.size)
     ret := p.cards[pick]
     p.cards[pick] = p.cards[p.size - 1]
     p.size--

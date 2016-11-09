@@ -1,6 +1,7 @@
 const (
     Ncard = 24
     Ntext = 8
+    Nbutton = 2
 )
 
 struct CardProp {
@@ -17,15 +18,27 @@ func (p *CardProp) equals(other *CardProp) bool {
 
 func (p *CardProp) action() byte {
     if p.Visible {
-        if p.FaceUp return ShowFront
-        return ShowBack
+        if p.FaceUp return cardShowFront
+        return cardShowBack
     }
 
-    if p.FaceUp return HideFront
-    return HideBack
+    if p.FaceUp return cardHideFront
+    return cardHideBack
+}
+
+struct ButtonProp {
+    Visible bool
+    Text string
+}
+
+func (p *ButtonProp) equals(other *ButtonProp) bool {
+    if p.Visible != other.Visible return false
+    if !p.Visible return true
+    return strings.Equals(p.Text, other.Text)
 }
 
 struct Prop {
     Cards [Ncard]CardProp
+    Buttons [Nbutton]ButtonProp
     Texts [Ntext]string
 }

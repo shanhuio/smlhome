@@ -4,6 +4,7 @@ import (
     "fmt"
     "long"
     "misc"
+    "rand"
     "table"
     "time"
 )

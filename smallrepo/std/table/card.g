@@ -29,7 +29,7 @@ func (c *card) render() {
     if !c.dirty return
 
     p := &c.prop
-    SetFace(c.pos, p.Face)
-    Act(c.pos, p.action())
+    actChar(cardFace, c.pos, p.Face)
+    act(p.action(), c.pos)
     c.dirty = false
 }

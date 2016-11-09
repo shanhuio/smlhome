@@ -8,7 +8,27 @@ func call(buf []byte) {
     }
 }
 
-func act(action, pos uint8, face char) {
+const (
+    cardShow = 1
+    cardShowFront = 2
+    cardShowBack = 3
+    cardHide = 4
+    cardHideFront = 5
+    cardHideBack = 6
+    cardFace = 7
+
+    labelText = 8
+
+    buttonShow = 9
+    buttonHide = 10
+    buttonText = 11
+)
+
+func act(action, pos uint8) {
+    actChar(action, pos, char(0))
+}
+
+func actChar(action, pos uint8, face char) {
     buf := msgBuf[:4]
     buf[0] = action
     buf[1] = pos
@@ -16,30 +36,10 @@ func act(action, pos uint8, face char) {
     call(buf)
 }
 
-const (
-    Show = 1
-    ShowFront = 2
-    ShowBack = 3
-    Hide = 4
-    HideFront = 5
-    HideBack = 6
-
-    setFace = 7
-    setText = 8
-)
-
-func Act(pos, action uint8) {
-    act(action, pos, char(0))
-}
-
-func SetFace(pos uint8, c char) {
-    act(setFace, pos, c)
-}
-
-func SetText(pos uint8, s string) {
+func actString(action, pos uint8, s string) {
     n := len(s)
     buf := msgBuf[:n + 3]
-    buf[0] = setText
+    buf[0] = action
     buf[1] = pos
     buf[2] = uint8(n)
     for i := 0; i < n; i++ {
@@ -48,10 +48,10 @@ func SetText(pos uint8, s string) {
     call(buf)
 }
 
-func SetTextBytes(pos uint8, bs []byte) {
+func actBytes(action, pos uint8, bs []byte) {
     n := len(bs)
     buf := msgBuf[:n + 3]
-    buf[0] = setText
+    buf[0] = action
     buf[1] = pos
     buf[2] = uint8(n)
     for i := 0; i < n; i++ {

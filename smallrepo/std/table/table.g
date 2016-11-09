@@ -1,6 +1,7 @@
 struct table {
     cards [Ncard]card
     texts [Ntext]text
+    buttons [Nbutton]button
     m dirtyMap
 }
 
@@ -24,7 +25,12 @@ func (t *table) update(p *Prop) {
 
     n = len(t.texts)
     for i := 0; i < n; i++ {
-        t.texts[i].get().WriteString(p.Texts[i])
+        t.texts[i].update(p.Texts[i])
+    }
+
+    n = len(t.buttons)
+    for i := 0; i < n; i++ {
+        t.buttons[i].update(&p.Buttons[i])
     }
 }
 

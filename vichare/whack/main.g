@@ -19,6 +19,7 @@ func i2a(bs []byte, i int) string {
 func main() {
     const misClickLimit = 3
     var i2aBuf [8]byte
+    rand.SysSeed()
 
     for {
         var prop table.Prop
@@ -55,7 +56,7 @@ func main() {
                 if pool.IsEmpty() break // end of game
                 c = &prop.Cards[pool.PopRand()]
                 c.Visible = true
-                c.Face = 'A' + char(misc.Rand() % 26)
+                c.Face = 'A' + char(rand.IntN(26))
                 c.FaceUp = true
             } else if ev == events.Click {
                 pos, valid := s.LastClick()
