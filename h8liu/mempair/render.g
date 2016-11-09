@@ -74,4 +74,6 @@ func (r *render) writeTime(w *bytes.Buffer, t int, countDown bool) {
             w.WriteString(" seconds left")
         }
     }
+    fmt.PrintStr(w.String())
+    fmt.Println()
 }

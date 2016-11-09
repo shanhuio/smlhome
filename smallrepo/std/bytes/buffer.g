@@ -26,13 +26,16 @@ func (b *Buffer) Bytes() []byte {
 
 func (b *Buffer) String() string {
     bs := b.Bytes()
+    if len(bs) == 0 {
+        return ""
+    }
     // TODO(h8liu): this is more like a hack
     // maybe we should always use []byte as string?
     return make([]char, len(bs), (*char)(&bs[0]))
 }
 
 func (b *Buffer) WriteByte(byt byte) int {
-    if b.n == len(b.buf) return -1 // run out of buffer
+    if b.n >= len(b.buf) return -1 // run out of buffer
     b.buf[b.n] = byt
     b.n++
     return 0

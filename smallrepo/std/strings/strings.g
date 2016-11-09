@@ -10,3 +10,9 @@ func Equals(s1, s2 string) bool {
 func FromBytes(bs []byte) string {
     return make([]char, len(bs), (*char)(&bs[0]))
 }
+
+func TestEquals() {
+    assert(Equals("100", "100"))
+    assert(!Equals("2", "3"))
+    assert(!Equals("1 seconds", "2 seconds"))
+}
