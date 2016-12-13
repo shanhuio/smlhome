@@ -1,3 +1,3 @@
-# The stndard library.
+# The Standard Library.
 
 Still under heavy construction.

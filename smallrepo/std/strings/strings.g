@@ -15,4 +15,5 @@ func TestEquals() {
     assert(Equals("100", "100"))
     assert(!Equals("2", "3"))
     assert(!Equals("1 seconds", "2 seconds"))
+    assert(Equals(`abc`, "abc"))
 }

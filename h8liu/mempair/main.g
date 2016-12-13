@@ -4,8 +4,6 @@ var (
 )
 
 func main() {
-    fmt.PrintStr("Mem pair\n")
-
     configs[0].noShuffle = true
     configs[2].face = 'a'
     configs[3].timeLimit = 60

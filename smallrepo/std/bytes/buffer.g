@@ -12,6 +12,10 @@ func (b *Buffer) Reset() {
     b.n = 0
 }
 
+func (b *Buffer) Len() int {
+    return b.n
+}
+
 func (b *Buffer) Write(bs []byte) (int, int) {
     for i := 0; i < len(bs); i++ {
         err := b.WriteByte(bs[i])
@@ -52,4 +56,10 @@ func (b *Buffer) WriteString(s string) (int, int) {
         if err != 0 return i, err
     }
     return n, 0
+}
+
+func (b *Buffer) UnreadByte() int {
+    if b.n == 0 return -1
+    b.n--
+    return 0
 }

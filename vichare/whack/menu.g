@@ -1,19 +1,4 @@
-var (
-    ilong long.Long
-    ishort long.Long
-
-    easy timeChange
-    hard timeChange
-)
-
-func init() {
-    ilong.Uset(1100000000) // 1.3s
-    // easy.set(l, 1000)
-    ishort.Uset(800000000) // 0.8s
-    // hard.set(s, 1000)
-}
-
-func menu() long.Long {
+func menu() (int, int) {
     var prop table.Prop
     prop.Texts[0] = "Whack a Mole"
     prop.Texts[1] = "click card with 'M'"
@@ -31,8 +16,8 @@ func menu() long.Long {
         if ev == events.Click {
             what, pos := s.LastClick()
             if what == table.OnButton {
-                if pos == 0 return ilong
-                return ishort
+                if pos == 0 return 1100000000, 2
+                return 900000000, 2
             }
         }
     }

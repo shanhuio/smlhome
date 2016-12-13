@@ -4,7 +4,8 @@
         "Mirrors": [
             { "Dir": "smallrepo/std", "Space": "h8liu:322e43792e48"},
             { "Dir": "h8liu/mempair", "Space": "h8liu:2af5a6f19b7a"},
-            { "Dir": "vichare/whack", "Space": "vichare:a8503c0c3dd4"}
+            { "Dir": "vichare/whack", "Space": "vichare:a8503c0c3dd4"},
+            { "Dir": "yumuzi234/pt24", "Space": "h8liu:7816756bfc53"}
         ]
     },
     "s0": {
@@ -12,7 +13,8 @@
         "Mirrors": [
             { "Dir": "smallrepo/std", "Space": "h8liu:a8836508062d"},
             { "Dir": "h8liu/mempair", "Space": "h8liu:e95a91b874d5"},
-            { "Dir": "vichare/whack", "Space": "vichare:9f9d7769aad2"}
+            { "Dir": "vichare/whack", "Space": "vichare:9f9d7769aad2"},
+            { "Dir": "yumuzi234/pt24", "Space": "yumuzi234:30e086cb0d59"}
         ]
     },
     "h8i": {

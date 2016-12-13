@@ -2,11 +2,19 @@ var i2aBuf [8]byte
 
 var i2aBuf2 [8]byte
 
-func game(diff long.Long, limit int) bool {
+func speedUp(interval int, step int) int {
+    return interval / 1000 * (1000 - step)
+}
+
+func setTimer(t *time.Timer, interval int) {
+    ts := time.Now()
+    ts.Iadd(interval)
+    t.SetDeadline(&ts)
+}
+
+func game(interval, step, limit int) bool {
     var prop table.Prop
-    now := time.Now()
-    var ticker time.Ticker
-    ticker.Start(&now, &diff)
+    var timer time.Timer
     var c *table.CardProp = nil
     var s events.Selector
     var pool PosPool
@@ -23,12 +31,17 @@ func game(diff long.Long, limit int) bool {
     prop.Texts[1] = "0"
     prop.Texts[2] = "life"
     prop.Texts[3] = i2a(i2aBuf2[:], life)
+    prop.Buttons[0].Visible = true
+    prop.Buttons[0].Text = "return"
+
+    setTimer(&timer, interval)
 
     for {
         table.Render(&prop)
-        ev := s.Select(&ticker, nil)
-        if ev == events.Ticker {
-            if c != nil {
+
+        ev := s.Select(nil, &timer)
+        if ev == events.Timer {
+            if c != nil { // has a card on board, but time up.
                 if c.Face == 'W' && c.FaceUp {
                     score++
                     prop.Texts[1] = i2a(i2aBuf[:], score)
@@ -43,6 +56,7 @@ func game(diff long.Long, limit int) bool {
                     if life == 0 break
                 }
             }
+            // show another card
             pos = pool.PopRand()
             c = &prop.Cards[pos]
             c.Visible = true
@@ -52,8 +66,13 @@ func game(diff long.Long, limit int) bool {
                 c.Face = 'M'
             }
             c.FaceUp = true
+            interval = speedUp(interval, step)
+            setTimer(&timer, interval)
         } else if ev == events.Click {
             what, where := s.LastClick()
+            if what == table.OnButton {
+                return false
+            }
             if what == table.OnCard {
                 clicked := &prop.Cards[where]
                 if clicked.Visible && clicked.FaceUp {
@@ -75,6 +94,7 @@ func game(diff long.Long, limit int) bool {
             }
         }
     }
+
     prop.Texts[0] = "Game over, your score is"
     prop.Texts[2] = ""
     prop.Texts[3] = ""
@@ -83,6 +103,7 @@ func game(diff long.Long, limit int) bool {
     prop.Buttons[1].Visible = true
     prop.Buttons[1].Text = "menu"
     table.Render(&prop)
+
     for {
         ev := s.Select(nil, nil)
         if ev == events.Click {
