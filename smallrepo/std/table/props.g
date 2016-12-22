@@ -48,8 +48,21 @@ func (p *ButtonProp) equals(other *ButtonProp) bool {
     return strings.Equals(p.Text, other.Text)
 }
 
+struct PicProp {
+    Visible bool
+    Left int
+    Top int
+}
+
+func (p *PicProp) equals(other *PicProp) bool {
+    if p.Visible != other.Visible return false
+    if !p.Visible return true
+    return p.Left == other.Left && p.Top == other.Top
+}
+
 struct Prop {
     Cards [Ncard]CardProp
     Buttons [Nbutton]ButtonProp
     Texts [Ntext]string
+    Pic PicProp
 }

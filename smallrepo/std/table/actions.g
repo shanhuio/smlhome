@@ -22,6 +22,10 @@ const (
     buttonShow = 9
     buttonHide = 10
     buttonText = 11
+
+    picShow = 12
+    picHide = 13
+    picPosition = 14
 )
 
 func act(action, pos uint8) {
@@ -36,14 +40,27 @@ func actChar(action, pos uint8, face char) {
     call(buf)
 }
 
+func actNums(action uint8, n1, n2 int) {
+    buf := msgBuf[:10]
+    buf[0] = action
+    buf[1] = 0
+    binary.PutI32(buf[2:6], n1)
+    binary.PutI32(buf[6:10], n2)
+    call(buf)
+}
+
 func actString(action, pos uint8, s string) {
     n := len(s)
-    buf := msgBuf[:n + 3]
+    end := n + 3
+    if end > len(msgBuf) {
+        end = len(msgBuf)
+    }
+    buf := msgBuf[:end]
     buf[0] = action
     buf[1] = pos
     buf[2] = uint8(n)
-    for i := 0; i < n; i++ {
-        buf[3 + i] = byte(s[i])
+    for i := 3; i < end; i++ {
+        buf[i] = byte(s[i - 3])
     }
     call(buf)
 }

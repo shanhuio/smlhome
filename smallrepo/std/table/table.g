@@ -2,6 +2,7 @@ struct table {
     cards [Ncard]card
     texts [Ntext]text
     buttons [Nbutton]button
+    pic pic
     m dirtyMap
 }
 
@@ -37,6 +38,8 @@ func (t *table) update(p *Prop) {
     for i := 0; i < n; i++ {
         t.buttons[i].update(&p.Buttons[i])
     }
+
+    t.pic.update(&p.Pic)
 }
 
 func (t *table) render() {
@@ -57,4 +60,6 @@ func (t *table) render() {
     for i := 0; i < n; i++ {
         t.buttons[i].render()
     }
+
+    t.pic.render()
 }
