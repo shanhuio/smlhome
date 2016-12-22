@@ -14,13 +14,14 @@ func (r *Rand) Init(seed uint) {
     r.x = seed
 }
 
-// Uint returns a random uint normally distributed from 0 to 2^32-2
+// Uint returns a random uint normally distributed from 1 to 2^32-1
 func (r *Rand) Uint() uint {
+    // TODO(h8liu): this is incorrect.
     if r.x == 0 {
         r.x = 89482311
     }
     r.x *= 48271
-    return r.x - 1
+    return r.x
 }
 
 // Int returns a random int.

@@ -10,6 +10,17 @@ struct CardProp {
     FaceUp bool
 }
 
+func (p *CardProp) ShowFace(face char) {
+    p.Visible = true
+    p.Face = face
+    p.FaceUp = true
+}
+
+func (p *CardProp) ShowBack() {
+    p.Visible = true
+    p.FaceUp = false
+}
+
 func (p *CardProp) equals(other *CardProp) bool {
     if p.Visible != other.Visible return false
     if !p.Visible return true
