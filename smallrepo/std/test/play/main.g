@@ -1,28 +1,40 @@
 import (
-    "vpc"
-    "fmt"
+    "table"
+    "time"
+    "events"
     "long"
 )
 
-var msg [1000]byte
-
 func main() {
-    var dur long.Long
-    dur.Iset(1000000000)
-    var ts long.Long
+    var p table.Prop
+    pic := &p.Pic
 
-    for i := 0; i < 10; i++ {
-        service, _, err := vpc.Poll(&dur, msg[:])
-        fmt.PrintUint(service)
-        fmt.Println()
-        fmt.PrintInt(err)
-        fmt.Println()
+    var interval long.Long
+    interval.Iset(15000000) // about 60 fps
+    now := time.Now()
 
-        vpc.TimeElapsed(&ts)
-        fmt.PrintUint(ts.Hi)
-        fmt.Println()
-        fmt.PrintUint(ts.Lo)
-        fmt.Println()
-        fmt.PrintStr("----\n")
+    var ticker time.Ticker
+    ticker.Start(&now, &interval)
+
+    var s events.Selector
+
+    for {
+        s.Select(&ticker, nil)
+        n := ticker.N()
+        if n > 300 {
+            break
+        }
+
+        stage := n % 100
+        
+        pic.Visible = true
+        if stage < 50 {
+            pic.Left = 20 + stage * 2
+        } else {
+            pic.Left = 20 + (100 - stage) * 2
+        }
+        pic.Top = 20
+
+        table.Render(&p)
     }
 }
