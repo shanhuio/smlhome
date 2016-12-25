@@ -26,7 +26,7 @@ func main() {
         }
 
         stage := n % 100
-        
+
         pic.Visible = true
         if stage < 50 {
             pic.Left = 20 + stage * 2

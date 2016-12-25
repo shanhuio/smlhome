@@ -1,13 +1,16 @@
 const (
     Nothing = 0
-    Click = 1
-    Timer = 2
-    Ticker = 3
+    Timer = 1
+    Ticker = 2
+    Click = 3
+    KeyDown = 4
 )
 
 struct Selector {
+    lastInput int
     clickWhat int
     clickPos int
+    keyCode uint8
 }
 
 var msgBuf [16]byte
@@ -16,7 +19,11 @@ func (s *Selector) LastClick() (int, int) {
     return s.clickWhat, s.clickPos
 }
 
-func (s *Selector) pollClick(timeout *time.Timeout) bool {
+func (s *Selector) LastKeyCode() uint8 {
+    return s.keyCode
+}
+
+func (s *Selector) pollInput(timeout *time.Timeout) bool {
     now := time.Now()
     wait := timeout.Get(&now)
     service, n, err := vpc.Poll(wait, msgBuf[:])
@@ -31,6 +38,11 @@ func (s *Selector) pollClick(timeout *time.Timeout) bool {
         what, pos := table.HandleClick(msg) // parse the message
         s.clickWhat = int(what)
         s.clickPos = int(pos)
+        s.lastInput = Click
+        return true
+    } else if service == vpc.Keyboard {
+        s.keyCode = msg[1]
+        s.lastInput = KeyDown
         return true
     }
 
@@ -65,6 +77,6 @@ func (s *Selector) Select(ticker *time.Ticker, timer *time.Timer) int {
         ticker.SetTimeout(&timeout)
     }
 
-    if s.pollClick(&timeout) return Click
+    if s.pollInput(&timeout) return s.lastInput
     return s.poll(ticker, timer)
 }

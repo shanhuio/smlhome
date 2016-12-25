@@ -5,6 +5,7 @@ const (
     Rand = 3
     Clock = 4
     Table = 5
+    Keyboard = 6
 )
 
 const (
