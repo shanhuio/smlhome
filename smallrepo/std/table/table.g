@@ -2,6 +2,8 @@ struct table {
     cards [Ncard]card
     texts [Ntext]text
     buttons [Nbutton]button
+    maxDiv int
+    divs [256]div
     pic pic
     m dirtyMap
 }
@@ -40,6 +42,17 @@ func (t *table) update(p *Prop) {
     }
 
     t.pic.update(&p.Pic)
+
+    n = len(p.Divs)
+    for i := 0; i < n; i++ {
+        d := p.Divs[i]
+        k := d.Key
+        lim := int(d.Key) + 1
+        if t.maxDiv < lim {
+            t.maxDiv = lim
+        }
+        t.divs[k].update(d)
+    }
 }
 
 func (t *table) render() {
@@ -62,4 +75,15 @@ func (t *table) render() {
     }
 
     t.pic.render()
+
+    var enc coder.Encoder
+    enc.Init(msgBuf[:])
+    enc.U8(divUpdate)
+
+    n = t.maxDiv
+    for i := 0; i < n; i++ {
+        t.divs[i].encode(&enc)
+    }
+
+    call(enc.Bytes())
 }

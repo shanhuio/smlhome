@@ -65,4 +65,6 @@ struct Prop {
     Buttons [Nbutton]ButtonProp
     Texts [Ntext]string
     Pic PicProp
+
+    Divs []*Div
 }

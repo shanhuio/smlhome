@@ -1,4 +1,4 @@
-var msgBuf [512]byte
+var msgBuf [1024]byte
 
 func call(buf []byte) {
     _, err := vpc.Call(vpc.Table, buf, nil)
@@ -26,6 +26,8 @@ const (
     picShow = 12
     picHide = 13
     picPosition = 14
+
+    divUpdate = 15
 )
 
 func act(action, pos uint8) {
