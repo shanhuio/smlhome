@@ -18,7 +18,6 @@ func strBytes(s string) []byte {
 func testIEEE(want uint32, s string) {
     bs := strBytes(s)
     got := ChecksumIEEE(bs)
-    printUint(got)
     assert(got == want)
 }
 

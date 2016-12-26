@@ -20,6 +20,8 @@ struct Div {
 func (d *Div) encode(enc *coder.Encoder) {
     enc.U8(d.Key)
     enc.Bool(d.Visible)
+    if !d.Visible return
+
     enc.U8(d.ZIndex)
     enc.U32(d.Transition)
     enc.U32(d.Left)
@@ -58,11 +60,16 @@ func (d *Div) equals(other *Div) bool {
 
 func (d *div) update(p *Div) {
     if d.prop.equals(p) return
-    d.prop = *p
+    if p.Visible {
+        d.prop = *p
+    } else {
+        d.prop.Visible = false
+    }
     d.dirty = true
 }
 
 func (d *div) encode(enc *coder.Encoder) {
     if !d.dirty return
+    d.dirty = false
     d.prop.encode(enc)
 }

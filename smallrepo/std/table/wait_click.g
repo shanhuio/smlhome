@@ -9,6 +9,7 @@ const (
     OnTable = 0
     OnCard = 1
     OnButton = 2
+    OnDiv = 3
 )
 
 func WaitClick(nanos *long.Long) (uint8, uint8, bool) {
