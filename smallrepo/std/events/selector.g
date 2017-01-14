@@ -10,7 +10,6 @@ struct Selector {
     lastInput int
     clickWhat int
     clickPos int
-    keyCodeValid bool
     keyCode uint8
 }
 
