@@ -1,5 +1,5 @@
 struct RationalNum {
-    // num=n/d 
+    // num=n/d
     n int
     d int
 }

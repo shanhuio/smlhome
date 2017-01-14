@@ -43,7 +43,7 @@ func (p *parser) parseParen() (RationalNum, bool) {
     return ret, true
 }
 
-// example: 3, (xxx) 
+// example: 3, (xxx)
 func (p *parser) parsePrimary() (RationalNum, bool) {
     c := p.current()
     if c == '(' return p.parseParen()
