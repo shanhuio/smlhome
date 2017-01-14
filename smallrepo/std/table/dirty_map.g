@@ -1,7 +1,18 @@
+const maxDirtyMap = 256
+
 struct dirtyMap {
-    dirty [Ncard]bool
-    blocks [Ncard]byte
+    dirtyBuf [maxDirtyMap]bool
+    blocksBuf [maxDirtyMap]byte
+
+    dirty []bool
+    blocks []byte
+    max int
     n int
+}
+
+func (m *dirtyMap) init(max int) {
+    m.dirty = m.dirtyBuf[:max]
+    m.blocks = m.blocksBuf[:max]
 }
 
 func (m *dirtyMap) touch(p byte) {

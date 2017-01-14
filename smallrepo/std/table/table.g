@@ -1,17 +1,19 @@
 struct table {
     cards [Ncard]card
+    dirtyCards dirtyMap
+
     texts [Ntext]text
     buttons [Nbutton]button
-    maxDiv int
-    divs [256]div
-    pic pic
-    m dirtyMap
+
+    divs [Ndiv]div
+    dirtyDivs dirtyMap
 }
 
 func (t *table) init() {
     n := len(t.cards)
+    t.dirtyCards.init(n)
     for i := 0; i < n; i++ {
-        t.cards[i].init(byte(i), &t.m)
+        t.cards[i].init(byte(i), &t.dirtyCards)
     }
 
     n = len(t.texts)
@@ -22,6 +24,12 @@ func (t *table) init() {
     n = len(t.buttons)
     for i := 0; i < n; i++ {
         t.buttons[i].init(byte(i))
+    }
+
+    n = len(t.divs)
+    t.dirtyDivs.init(n)
+    for i := 0; i < n; i++ {
+        t.divs[i].init(byte(i), &t.dirtyDivs)
     }
 }
 
@@ -41,16 +49,10 @@ func (t *table) update(p *Prop) {
         t.buttons[i].update(&p.Buttons[i])
     }
 
-    t.pic.update(&p.Pic)
-
     n = len(p.Divs)
     for i := 0; i < n; i++ {
         d := p.Divs[i]
         k := d.Key
-        lim := int(d.Key) + 1
-        if t.maxDiv < lim {
-            t.maxDiv = lim
-        }
         t.divs[k].update(d)
     }
 }
@@ -58,11 +60,11 @@ func (t *table) update(p *Prop) {
 func (t *table) render() {
     i := 0
     for {
-        pos, ok := t.m.iter(&i)
+        pos, ok := t.dirtyCards.iter(&i)
         if !ok break
         t.cards[pos].render()
     }
-    t.m.clear()
+    t.dirtyCards.clear()
 
     n := len(t.texts)
     for i := 0; i < n; i++ {
@@ -74,16 +76,23 @@ func (t *table) render() {
         t.buttons[i].render()
     }
 
-    t.pic.render()
-
+    // update divs
     var enc coder.Encoder
     enc.Init(msgBuf[:])
     enc.U8(divUpdate)
 
-    n = t.maxDiv
-    for i := 0; i < n; i++ {
-        t.divs[i].encode(&enc)
-    }
+    i = 0
+    for {
+        index, ok := t.dirtyDivs.iter(&i)
+        if !ok break
 
-    call(enc.Bytes())
+        var enc coder.Encoder
+        enc.Init(msgBuf[:])
+        enc.U8(divUpdate)
+        t.divs[index].encode(&enc)
+        call(enc.Bytes())
+    }
+    t.dirtyDivs.clear()
+
+    actCommit()
 }

@@ -8,7 +8,16 @@
     "s0": {
         "Host": "https://test.smallrepo.com",
         "Mirrors": [
-            { "Dir": "smallrepo/std", "Space": "h8liu:564ecb405504"}
+            { "Dir": "smallrepo/std" },
+            { "Dir": "h8liu/ethan" },
+            { "Dir": "h8liu/animate" },
+            { "Dir": "h8liu/game2048" },
+            { "Dir": "h8liu/matchit" },
+            { "Dir": "h8liu/leetcode" },
+            { "Dir": "h8liu/mempair" },
+            { "Dir": "h8liu/xmas" },
+            { "Dir": "vichare/whack" },
+            { "Dir": "yumuzi234/pt24" }
         ]
     },
     "h8i": {

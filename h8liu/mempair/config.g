@@ -16,6 +16,6 @@ func (c *config) getFace() char {
 }
 
 func (c *config) getSeed() uint {
-    if c.randSeed == 0 return misc.Rand()
+    if c.randSeed == 0 return rand.SysRand()
     return c.randSeed
 }

@@ -1,0 +1,3 @@
+const (
+    size = 4
+)

@@ -58,13 +58,13 @@ func main() {
         stage := n % nstage
 
         if stage < nstage / 2 {
-            d1.Left = uint(20 + stage * step)
+            d1.Left = 20 + stage * step
         } else {
-            d1.Left = uint(20 + (nstage - stage) * step)
+            d1.Left = 20 + (nstage - stage) * step
         }
         d1.Top = 20
 
-        d2.Left = uint(40 + nstage / 2 * step) - d1.Left
+        d2.Left = 40 + nstage / 2 * step - d1.Left
         d2.Top = 100
 
         w.Init(textBuf1[:])

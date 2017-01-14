@@ -1,4 +1,4 @@
-var msgBuf [1024]byte
+var msgBuf [1300]byte
 
 func call(buf []byte) {
     _, err := vpc.Call(vpc.Table, buf, nil)
@@ -9,6 +9,8 @@ func call(buf []byte) {
 }
 
 const (
+    commit = 0
+
     cardShow = 1
     cardShowFront = 2
     cardShowBack = 3
@@ -29,6 +31,12 @@ const (
 
     divUpdate = 15
 )
+
+func actCommit() {
+    buf := msgBuf[:1]
+    buf[0] = 0
+    call(buf)
+}
 
 func act(action, pos uint8) {
     actChar(action, pos, char(0))

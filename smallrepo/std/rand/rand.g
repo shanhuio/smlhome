@@ -1,6 +1,7 @@
 // Rand is a pseudo-random number generator
 struct Rand {
-    x uint
+    inited bool
+    s source
 }
 
 // RandInit initializes the random number generator with the system
@@ -11,17 +12,16 @@ func (r *Rand) RandInit() {
 
 // Init initializes the random number generator with the given seed.
 func (r *Rand) Init(seed uint) {
-    r.x = seed
+    r.s.init(seed)
+    r.inited = true
 }
 
 // Uint returns a random uint normally distributed from 1 to 2^32-1
 func (r *Rand) Uint() uint {
-    // TODO(h8liu): this is incorrect.
-    if r.x == 0 {
-        r.x = 89482311
+    if !r.inited {
+        r.Init(0)
     }
-    r.x *= 48271
-    return r.x
+    return r.s.read()
 }
 
 // Int returns a random int.
@@ -41,12 +41,13 @@ func TestRand() {
     assert(x != y)
 
     i1 := r.Int()
+    printInt(i1)
     i2 := r.Int()
     assert(i1 != i2)
 }
 
 func TestIntN() {
-    const n = 5
+    const n = 24
     var r Rand
     var counts [n]int
 
