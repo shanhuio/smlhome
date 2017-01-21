@@ -2,7 +2,8 @@
     "h8x": {
         "Host": "http://localhost:3356",
         "Mirrors": [
-            { "Dir": "smallrepo/std", "Space": "h8liu:d0124f6a789f"}
+            { "Dir": "smallrepo/std", "Ref": "h8liu:d0124f6a789f"},
+            { "Dir": "h8liu/mempair", "Ref": "h8liu:3a3de4b74108"}
         ]
     },
     "s0": {
@@ -23,8 +24,8 @@
     "h8i": {
         "Host": "http://localhost:3356",
         "Mirrors": [
-            { "Dir": "smallrepo/std", "Space": "h8liu:9c44c2173964"},
-            { "Dir": "h8liu/mempair", "Space": "h8liu:f007593a0ada"}
+            { "Dir": "smallrepo/std", "Ref": "h8liu:9c44c2173964"},
+            { "Dir": "h8liu/mempair", "Ref": "h8liu:f007593a0ada"}
         ]
     }
 }
