@@ -1,9 +1,8 @@
 {
-    "h8x": {
+    "lo": {
         "Host": "http://localhost:3356",
         "Mirrors": [
-            { "Dir": "smallrepo/std", "Ref": "h8liu:d0124f6a789f"},
-            { "Dir": "h8liu/mempair", "Ref": "h8liu:3a3de4b74108"}
+            { "Dir": "smallrepo/std" }
         ]
     },
     "s0": {
@@ -19,13 +18,6 @@
             { "Dir": "h8liu/xmas" },
             { "Dir": "vichare/whack" },
             { "Dir": "yumuzi234/pt24" }
-        ]
-    },
-    "h8i": {
-        "Host": "http://localhost:3356",
-        "Mirrors": [
-            { "Dir": "smallrepo/std", "Ref": "h8liu:9c44c2173964"},
-            { "Dir": "h8liu/mempair", "Ref": "h8liu:f007593a0ada"}
         ]
     }
 }

@@ -36,14 +36,8 @@ func (r *Rand) IntN(n int) int {
 
 func TestRand() {
     var r Rand
-    x := r.Uint()
-    y := r.Uint()
-    assert(x != y)
-
-    i1 := r.Int()
-    printInt(i1)
-    i2 := r.Int()
-    assert(i1 != i2)
+    assert(r.Uint() != r.Uint())
+    assert(r.Int() != r.Int())
 }
 
 func TestIntN() {
