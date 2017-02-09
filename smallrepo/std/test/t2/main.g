@@ -20,6 +20,7 @@ func main() {
     b.ClassID = cls.ID()
     b.Left = 100
     b.Top = 100
+    b.ZIndex = 1
     b.Text = "Hello, world!"
 
     ba.Append(b)
