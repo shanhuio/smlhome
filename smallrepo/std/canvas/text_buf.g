@@ -1,0 +1,1 @@
+const textBufLen = 64

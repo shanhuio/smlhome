@@ -30,6 +30,10 @@ const (
     picPosition = 14
 
     divUpdate = 15
+
+    boxClassUpdate = 16
+    boxUpdate = 17
+    boxShow = 18
 )
 
 func actCommit() {
