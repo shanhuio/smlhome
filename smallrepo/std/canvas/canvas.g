@@ -16,6 +16,9 @@ func (c *Canvas) Init() {
     for i := 0; i < nbox; i++ {
         c.boxes[i].id = uint8(i)
     }
+    for i := 0; i < nbox; i++ {
+        c.shadowBoxes[i].init()
+    }
     for i := 0; i < nboxClass; i++ {
         c.boxClasses[i].id = uint8(i)
     }
@@ -73,6 +76,10 @@ func (c *Canvas) Render(boxes *BoxArray) {
 
 var theCanvas Canvas
 
+func init() {
+    theCanvas.Init()
+}
+
 func Get() *Canvas {
     return &theCanvas
 }
@@ -83,9 +90,7 @@ func PushBoxClasses(classes []*BoxClass) {
         var enc coder.Encoder
         enc.Init(msgBuf[:])
         enc.U8(boxClassUpdate)
-
         classes[i].encode(&enc)
-
         call(enc.Bytes())
     }
 }

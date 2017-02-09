@@ -37,6 +37,7 @@ func (b *box) equals(prop *Box) bool {
 func (b *box) setText(s string) {
     if len(s) == 0 {
         b.text = ""
+        return
     }
 
     b.w.Reset()
