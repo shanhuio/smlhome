@@ -84,13 +84,10 @@ func Get() *Canvas {
     return &theCanvas
 }
 
-func PushBoxClasses(classes []*BoxClass) {
-    n := len(classes)
-    for i := 0; i < n; i++ {
-        var enc coder.Encoder
-        enc.Init(msgBuf[:])
-        enc.U8(boxClassUpdate)
-        classes[i].encode(&enc)
-        call(enc.Bytes())
-    }
+func UpdateBoxClass(cls *BoxClass) {
+    var enc coder.Encoder
+    enc.Init(msgBuf[:])
+    enc.U8(boxClassUpdate)
+    cls.encode(&enc)
+    call(enc.Bytes())
 }
