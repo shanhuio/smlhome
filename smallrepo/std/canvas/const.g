@@ -1,1 +1,1 @@
-const npool = 256
+const npool = 128

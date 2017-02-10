@@ -1,6 +1,6 @@
 func gap() uint8 {
     var aWhile long.Long
-    aWhile.Iset(100000000)
+    aWhile.Iset(1e8)
 
     var timer time.Timer
     t := time.Now()

@@ -5,5 +5,6 @@ func main() {
     initFaces()
     g := &theGame
     g.init()
+
     g.run()
 }
