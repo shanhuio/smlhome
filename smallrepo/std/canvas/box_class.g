@@ -28,6 +28,10 @@ func (c *BoxClass) encode(enc *coder.Encoder) {
     enc.U32(c.Foreground)
     enc.U32(c.Background)
     enc.U32(c.TransitionMs)
-    enc.U8(uint8(len(c.Text)))
-    enc.Str(c.Text)
+    if len(c.Text) == 0 {
+        enc.U8(0)
+    } else {
+        enc.U8(uint8(len(c.Text)))
+        enc.Str(c.Text)
+    }
 }

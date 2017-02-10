@@ -7,9 +7,11 @@ struct piecePool {
 }
 
 func (p *piecePool) init() {
+    c := canvas.Get()
+
     for i := 0; i < poolSize; i++ {
         t := &p.pieces[i]
-        t.init(uint8(i) + 1)
+        t.init(c.AllocBox())
         p.pool[poolSize - 1 - i] = t
     }
     p.n = poolSize

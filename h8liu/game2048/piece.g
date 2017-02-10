@@ -5,36 +5,18 @@ struct piece {
     toDouble bool
     newBorn bool
 
-    div table.Div
+    box *canvas.Box
 }
 
-func (p *piece) init(key uint8) {
-    d := &p.div
-    d.Key = key
-    d.Width = 80
-    d.Height = 80
-    d.BorderRadius = 3
-    d.Visible = true
-    d.Transition = 120
+func (p *piece) init(b *canvas.Box) {
+    p.box = b
 }
 
-func (p *piece) render() *table.Div {
-    ret := &p.div
-    ret.Left = 30 + 100 * int(p.col)
-    ret.Top = 30 + 100 * int(p.row)
+func (p *piece) render() *canvas.Box {
+    b := p.box
+    b.Left = 30 + 100 * int(p.col)
+    b.Top = 30 + 100 * int(p.row)
+    b.ClassID = faceClassID(p.value)
 
-    if p.value < uint8(len(pieceFaces)) {
-        f := &pieceFaces[p.value]
-        ret.Text = f.text
-        ret.Color = f.color
-        ret.BackgroundColor = f.background
-        ret.FontSize = f.fontSize
-    } else {
-        ret.Text = "HUGE"
-        ret.Color = 0x990000
-        ret.BackgroundColor = 0xffffff
-        ret.FontSize = 20
-    }
-
-    return ret
+    return b
 }

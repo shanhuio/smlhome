@@ -169,52 +169,32 @@ func newValue() uint8 {
 }
 
 func (g *game) render(step int) {
-    var divs [poolSize]*table.Div
-    ndiv := 0
+    var boxes canvas.BoxArray
 
     const n = size * size
     for i := 0; i < n; i++ {
         c := g.cells[i]
         if c == nil continue
-        d := c.render()
-        d.ZIndex = 2
+        b := c.render()
+        b.ZIndex = 2
 
         if c.newBorn {
-            if step == 0 {
-                d.Visible = false
-            } else {
-                d.Visible = true
-                c.newBorn = false
-            }
+            if step == 0 continue
+            c.newBorn = false
         }
-        divs[ndiv] = d
-        ndiv++
+        boxes.Append(b)
     }
 
     for i := 0; i < n; i++ {
         c := g.bgCells[i]
         if c == nil continue
-        d := c.render()
-        d.ZIndex = 1
-        if step == 1 {
-            d.Visible = false
-        } else {
-            d.Visible = true
-        }
-        divs[ndiv] = d
-        ndiv++
+        b := c.render()
+        b.ZIndex = 1
+        if step == 1 continue
+        boxes.Append(b)
     }
 
-    g.table.Divs = divs[:ndiv]
-
-    g.table.Texts[0] = "Try to get 2048."
-    if g.won {
-        g.table.Texts[2] = "You won!"
-    } else if g.lost {
-        g.table.Texts[2] = "No move. Game over."
-    }
-
-    table.Render(&g.table)
+    canvas.Get().Render(&boxes)
 }
 
 func (g *game) ended() bool {

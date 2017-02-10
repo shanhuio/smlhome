@@ -6,4 +6,5 @@ import (
     "rand"
     "long"
     "time"
+    "canvas"
 )
