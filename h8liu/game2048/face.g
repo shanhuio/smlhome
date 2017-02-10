@@ -3,6 +3,7 @@ var classes [15]*canvas.BoxClass
 func addClass(i int, text string, fg, bg uint32, fontSize uint8) {
     c := canvas.Get()
     cls := c.AllocBoxClass()
+    classes[i] = cls
 
     cls.Text = text
     cls.Foreground = fg

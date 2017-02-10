@@ -84,7 +84,7 @@ func Get() *Canvas {
     return &theCanvas
 }
 
-func UpdateBoxClass(cls *BoxClass) {
+func UpdateBoxClass(cls *BoxClass) {    
     var enc coder.Encoder
     enc.Init(msgBuf[:])
     enc.U8(boxClassUpdate)
