@@ -1,16 +1,15 @@
 var classes [15]*canvas.BoxClass
 
 func addClass(i int, text string, fg, bg uint32, fontSize uint8) {
-    c := canvas.Get()
-    cls := c.AllocBoxClass()
+    cls := canvas.AllocBoxClass()
     classes[i] = cls
 
     cls.Text = text
     cls.Foreground = fg
     cls.Background = bg
     cls.FontSize = fontSize
-    cls.Width = 80
-    cls.Height = 80
+    cls.Width = 75
+    cls.Height = 75
     cls.BorderRadius = 3
     cls.TransitionMs = 120
 
@@ -35,9 +34,9 @@ func initFaces() {
     addClass(7, "128", 0xf9f6f2, 0xedcf72, 32)
     addClass(8, "256", 0xf9f6f2, 0xedcc61, 32)
     addClass(9, "512", 0xf9f6f2, 0xedc850, 32)
-    addClass(10, "1024", 0xf9f6f2, 0xedc53f, 28)
-    addClass(11, "2048", 0xf9f6f2, 0xedc22e, 28)
-    addClass(12, "4096", 0xf9f6f2, 0x3c3a32, 28)
-    addClass(13, "8192", 0xf9f6f2, 0x3c3a32, 28)
-    addClass(14, "HUGE", 0xf9f6f2, 0x3c3a32, 28)
+    addClass(10, "1024", 0xf9f6f2, 0xedc53f, 26)
+    addClass(11, "2048", 0xf9f6f2, 0xedc22e, 26)
+    addClass(12, "4096", 0xf9f6f2, 0x3c3a32, 26)
+    addClass(13, "8192", 0xf9f6f2, 0x3c3a32, 26)
+    addClass(14, "HUGE", 0xf9f6f2, 0x3c3a32, 26)
 }

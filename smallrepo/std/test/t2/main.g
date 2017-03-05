@@ -3,9 +3,7 @@ import (
 )
 
 func main() {
-    c := canvas.Get()
-
-    cls := c.AllocBoxClass()
+    cls := canvas.AllocBoxClass()
     cls.Width = 300
     cls.Height = 30
     cls.Background = 0xffffff
@@ -16,16 +14,16 @@ func main() {
 
     var ba canvas.BoxArray
 
-    b := c.AllocBox()
+    b := canvas.AllocBox()
     b.ClassID = cls.ID()
-    b.Left = 100
+    b.Left = 75
     b.Top = 100
     b.ZIndex = 1
     b.Text = "Hello, world!"
 
     ba.Append(b)
-    c.Render(&ba)
+    canvas.Render(&ba)
 
-    c.FreeBox(b)
-    c.FreeBoxClass(cls)
+    canvas.FreeBox(b)
+    canvas.FreeBoxClass(cls)
 }

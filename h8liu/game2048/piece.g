@@ -1,3 +1,9 @@
+const (
+    leftMargin = 50
+    topMargin = 80
+    gridSize = 90
+)
+
 struct piece {
     valid bool
     row, col uint8
@@ -14,8 +20,8 @@ func (p *piece) init(b *canvas.Box) {
 
 func (p *piece) render() *canvas.Box {
     b := p.box
-    b.Left = 30 + 100 * int(p.col)
-    b.Top = 30 + 100 * int(p.row)
+    b.Left = leftMargin + gridSize * int(p.col)
+    b.Top = topMargin + gridSize * int(p.row)
     b.ClassID = faceClassID(p.value)
 
     return b

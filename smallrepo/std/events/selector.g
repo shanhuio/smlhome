@@ -24,6 +24,11 @@ func (s *Selector) LastKeyCode() uint8 {
     return s.keyCode
 }
 
+func handleTableClick(buf []byte) (uint8, uint8) {
+    if len(buf) < 2 return 0, 0
+    return buf[0], buf[1]
+}
+
 func (s *Selector) pollInput(timeout *time.Timeout) bool {
     now := time.Now()
     wait := timeout.Get(&now)
@@ -36,7 +41,7 @@ func (s *Selector) pollInput(timeout *time.Timeout) bool {
 
     msg := msgBuf[:n]
     if service == vpc.Table {
-        what, pos := table.HandleClick(msg) // parse the message
+        what, pos := handleTableClick(msg) // parse the message
         s.clickWhat = int(what)
         s.clickPos = int(pos)
         s.lastInput = Click

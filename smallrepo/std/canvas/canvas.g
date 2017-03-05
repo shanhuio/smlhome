@@ -2,7 +2,7 @@ struct Prop {
     Boxes BoxArray
 }
 
-struct Canvas {
+struct canvas {
     boxClasses [nboxClass]BoxClass
     boxes [nbox]Box
 
@@ -12,7 +12,7 @@ struct Canvas {
     boxClassPool pool
 }
 
-func (c *Canvas) Init() {
+func (c *canvas) init() {
     for i := 0; i < nbox; i++ {
         c.boxes[i].id = uint8(i)
     }
@@ -27,27 +27,27 @@ func (c *Canvas) Init() {
     c.boxClassPool.init()
 }
 
-func (c *Canvas) AllocBox() *Box {
+func (c *canvas) allocBox() *Box {
     i, ok := c.boxPool.alloc()
     if !ok return nil
     return &c.boxes[i]
 }
 
-func (c *Canvas) FreeBox(b *Box) {
+func (c *canvas) freeBox(b *Box) {
     c.boxPool.free(b.id)
 }
 
-func (c *Canvas) AllocBoxClass() *BoxClass {
+func (c *canvas) allocBoxClass() *BoxClass {
     i, ok := c.boxClassPool.alloc()
     if !ok return nil
     return &c.boxClasses[i]
 }
 
-func (c *Canvas) FreeBoxClass(cls *BoxClass) {
+func (c *canvas) freeBoxClass(cls *BoxClass) {
     c.boxClassPool.free(cls.id)
 }
 
-func (c *Canvas) Render(boxes *BoxArray) {
+func (c *canvas) render(boxes *BoxArray) {
     var visible bitmap
 
     n := boxes.Size()
@@ -72,22 +72,4 @@ func (c *Canvas) Render(boxes *BoxArray) {
     call(enc.Bytes())
 
     sendCommit()
-}
-
-var theCanvas Canvas
-
-func init() {
-    theCanvas.Init()
-}
-
-func Get() *Canvas {
-    return &theCanvas
-}
-
-func UpdateBoxClass(cls *BoxClass) {
-    var enc coder.Encoder
-    enc.Init(msgBuf[:])
-    enc.U8(boxClassUpdate)
-    cls.encode(&enc)
-    call(enc.Bytes())
 }

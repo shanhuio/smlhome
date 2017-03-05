@@ -1,14 +1,43 @@
+var msgClass *canvas.BoxClass
+
+func initMsgClass() {
+    msgClass = canvas.AllocBoxClass()
+    c := msgClass
+    c.BorderRadius = 3
+    c.Background = 0xf0f0f0
+    c.Foreground = 0x666666
+    c.FontSize = 25
+    c.Width = 240
+    c.Height = 40
+
+    canvas.UpdateBoxClass(msgClass)
+}
+
 struct game {
     cells [size * size]*piece
     bgCells [size * size]*piece
-    table table.Prop
     pool piecePool
+
+    msg *canvas.Box
+
     won bool
     lost bool
 }
 
 func (g *game) init() {
     g.pool.init()
+
+    b := canvas.AllocBox()
+    b.ClassID = msgClass.ID()
+    b.Left = 100
+    b.Top = 15
+    b.Text = ""
+    g.msg = b
+}
+
+func (g *game) destroy() {
+    // TODO: also free pieces
+    canvas.FreeBox(g.msg)
 }
 
 func index(row, col int) int {
@@ -194,7 +223,17 @@ func (g *game) render(step int) {
         boxes.Append(b)
     }
 
-    canvas.Get().Render(&boxes)
+    if g.won {
+        g.msg.Text = "You won!"
+    } else if g.lost {
+        g.msg.Text = "No move. Game over."
+    } else {
+        g.msg.Text = "Try to get 2048."
+    }
+
+    boxes.Append(g.msg)
+
+    canvas.Render(&boxes)
 }
 
 func (g *game) ended() bool {

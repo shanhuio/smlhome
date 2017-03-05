@@ -1,10 +1,8 @@
 import (
+    "canvas"
     "events"
-    //    "fmt"
     "keycode"
-    "table"
     "rand"
     "long"
     "time"
-    "canvas"
 )
