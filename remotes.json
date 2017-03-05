@@ -13,7 +13,7 @@
         ]
     },
     "s0": {
-        "Host": "https://test.smallrepo.com",
+        "Host": "https://smallrepo.com",
         "Mirrors": [
             { "Dir": "smallrepo/std" },
             { "Dir": "h8liu/ethan" },
