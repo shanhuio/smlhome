@@ -30,7 +30,9 @@ func (c *canvas) init() {
 func (c *canvas) allocBox() *Box {
     i, ok := c.boxPool.alloc()
     if !ok return nil
-    return &c.boxes[i]
+    ret := &c.boxes[i]
+    ret.clear()
+    return ret
 }
 
 func (c *canvas) freeBox(b *Box) {
@@ -40,7 +42,9 @@ func (c *canvas) freeBox(b *Box) {
 func (c *canvas) allocBoxClass() *BoxClass {
     i, ok := c.boxClassPool.alloc()
     if !ok return nil
-    return &c.boxClasses[i]
+    ret := &c.boxClasses[i]
+    ret.init()
+    return ret
 }
 
 func (c *canvas) freeBoxClass(cls *BoxClass) {

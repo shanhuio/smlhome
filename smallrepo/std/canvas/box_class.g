@@ -16,6 +16,17 @@ struct BoxClass {
     Text string
 }
 
+func (c *BoxClass) init() {
+    c.FontSize = 12
+    c.BorderRadius = 0
+    c.Width = 100
+    c.Height = 30
+    c.Foreground = 0
+    c.Background = 0xffffff
+    c.TransitionMs = 0
+    c.Text = ""
+}
+
 func (c *BoxClass) ID() uint8 {
     return c.id
 }

@@ -10,6 +10,14 @@ struct Box {
     Text string
 }
 
+func (b *Box) clear() {
+    b.ClassID = 0
+    b.Left = 0
+    b.Top = 0
+    b.ZIndex = 0
+    b.Text = ""
+}
+
 // box is the internal shadow box
 struct box {
     buf [textBufLen]byte
