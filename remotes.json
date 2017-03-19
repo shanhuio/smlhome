@@ -2,30 +2,19 @@
     "lo": {
         "Host": "http://localhost:3356",
         "Mirrors": [
-            { "Dir": "smallrepo/std" },
-            { "Dir": "h8liu/ethan" },
-            { "Dir": "h8liu/animate" },
-            { "Dir": "h8liu/game2048" },
-            { "Dir": "h8liu/matchit" },
-            { "Dir": "h8liu/leetcode" },
-            { "Dir": "h8liu/mempair" },
-            { "Dir": "h8liu/xmas" }
+            { "Dir": "std" },
+            { "Dir": "h8liu" },
+            { "Dir": "vichare" },
+            { "Dir": "yumuzi234" }
         ]
     },
     "s0": {
         "Host": "https://smallrepo.com",
         "Mirrors": [
-            { "Dir": "smallrepo/std" },
-            { "Dir": "h8liu/ethan" },
-            { "Dir": "h8liu/animate" },
-            { "Dir": "h8liu/game2048" },
-            { "Dir": "h8liu/matchit" },
-            { "Dir": "h8liu/leetcode" },
-            { "Dir": "h8liu/mempair" },
-            { "Dir": "h8liu/xmas" },
-            { "Dir": "h8liu/demo" },
-            { "Dir": "vichare/whack" },
-            { "Dir": "yumuzi234/pt24" }
+            { "Dir": "std" },
+            { "Dir": "h8liu" },
+            { "Dir": "vichare" },
+            { "Dir": "yumuzi234" }
         ]
     }
 }
