@@ -172,7 +172,7 @@ func (g *game) handleGap(pos int) {
         g.state = waitP1
     }
 
-    if pos >= 0 {
+    if pos >= 0 && g.blocks[pos].visible {
         g.handleP1(pos)
     }
 }
@@ -192,6 +192,7 @@ func (g *game) run() {
             if ev == events.Click {
                 what, pos := s.LastClick()
                 if what != table.OnDiv continue
+                if pos >= nblock continue
                 assert(g.blocks[pos].visible)
 
                 if g.state == waitP1 {

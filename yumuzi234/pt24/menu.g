@@ -1,9 +1,9 @@
 func menu() {
     var prop table.Prop
-    prop.Texts[0] = "Calculate 24"
-    prop.Texts[1] = "use four number with +-*/ to calculate 24"
-    prop.Texts[2] = "Click numbers and symbols to make the formula"
-    prop.Texts[3] = "C to calculate, R to Backspace"
+    prop.Texts[0] = "Click the nums and ops"
+    prop.Texts[1] = "to form an expression"
+    prop.Texts[2] = "that equals to 24"
+    prop.Texts[3] = "C - run, R - backspace"
     prop.Buttons[0].Visible = true
     prop.Buttons[0].Text = "start"
 
