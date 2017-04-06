@@ -12,6 +12,10 @@ func (c *Encoder) U32(u uint32) {
     c.buf.Write(buf[:])
 }
 
+func (c *Encoder) I32(v int32) {
+    c.U32(uint32(v))
+}
+
 func (c *Encoder) U8(u uint8) {
     c.buf.WriteByte(u)
 }
