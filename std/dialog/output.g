@@ -1,7 +1,7 @@
 var msgBuf [1300]byte
 
 func call(buf []byte) {
-    _, err := vpc.Call(vpc.Table, buf, nil)
+    _, err := vpc.Call(vpc.Dialog, buf, nil)
     if err != 0 {
         printInt(err)
         panic()
