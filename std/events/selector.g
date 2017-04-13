@@ -4,6 +4,7 @@ const (
     Ticker = 2
     Click = 3
     KeyDown = 4
+    Choice = 5
 )
 
 struct Selector {
@@ -12,6 +13,7 @@ struct Selector {
     clickPos int
     keyCodeValid bool
     keyCode uint8
+    choice int
 }
 
 var msgBuf [16]byte
@@ -22,6 +24,10 @@ func (s *Selector) LastClick() (int, int) {
 
 func (s *Selector) LastKeyCode() uint8 {
     return s.keyCode
+}
+
+func (s *Selector) LastChoice() int {
+    return s.choice
 }
 
 func handleTableClick(buf []byte) (uint8, uint8) {
