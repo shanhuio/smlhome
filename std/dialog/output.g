@@ -40,9 +40,9 @@ func Choose(choices []string, sec int) int {
         call(enc.Bytes())
     }
 
-	enc.Init(msgBuf[:])
-	enc.U8(cmdWaitChoice)
-	call(enc.Bytes())
+    enc.Init(msgBuf[:])
+    enc.U8(cmdWaitChoice)
+    call(enc.Bytes())
 
     // cook the deadline
     var timer time.Timer
