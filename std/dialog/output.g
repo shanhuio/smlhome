@@ -11,7 +11,7 @@ func call(buf []byte) {
 const (
     cmdSay = 0
     cmdChoice = 1
-    cmdChoose = 2
+    cmdWaitChoice = 2
 )
 
 // Say sends a message to the client
@@ -39,6 +39,10 @@ func Choose(choices []string, sec int) int {
 
         call(enc.Bytes())
     }
+
+	enc.Init(msgBuf[:])
+	enc.U8(cmdWaitChoice)
+	call(enc.Bytes())
 
     // cook the deadline
     var timer time.Timer
