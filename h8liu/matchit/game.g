@@ -39,7 +39,7 @@ func initLineDiv(d *table.Div) {
 
 // init sets up the game
 func (g *game) init() {
-    g.gapInterval.Iset(200000000)
+    g.gapInterval.Iset(2e8)
 
     initSelectDiv(&g.selectDiv1, uint8(nblock))
     initSelectDiv(&g.selectDiv2, uint8(nblock + 1))
