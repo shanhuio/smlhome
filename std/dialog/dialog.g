@@ -62,6 +62,7 @@ func Choose(choices []string, sec int) int {
     var s events.Selector
     for {
         what := s.Select(nil, ptimer)
+        printInt(what)
         if what == events.Timer return -1
         if what == events.Choice return s.LastChoice()
     }

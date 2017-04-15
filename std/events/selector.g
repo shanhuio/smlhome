@@ -58,7 +58,8 @@ func (s *Selector) pollInput(timeout *time.Timeout) bool {
         s.lastInput = KeyDown
         return true
     case vpc.Dialog:
-        s.choice = int(msg[1])
+        s.choice = int(msg[0])
+        s.lastInput = Choice
         return true
     }
 
@@ -83,6 +84,7 @@ func (s *Selector) poll(ticker *time.Ticker, timer *time.Timer) int {
 
 func (s *Selector) Select(ticker *time.Ticker, timer *time.Timer) int {
     ret := s.poll(ticker, timer)
+    printInt(ret)
     if ret != Nothing return ret
 
     var timeout time.Timeout
