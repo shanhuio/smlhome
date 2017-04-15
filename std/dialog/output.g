@@ -51,7 +51,7 @@ func Choose(choices []string, sec int) int {
     if sec > 0 {
         var dur long.Long
         dur.Iset(sec)
-        dur.Imul(1e9)
+        dur.Umul1e9()
 
         now := time.Now()
         timer.Set(&now, &dur)
