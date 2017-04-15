@@ -46,15 +46,19 @@ func (s *Selector) pollInput(timeout *time.Timeout) bool {
     }
 
     msg := msgBuf[:n]
-    if service == vpc.Table {
+    switch service {
+    case vpc.Table:
         what, pos := handleTableClick(msg) // parse the message
         s.clickWhat = int(what)
         s.clickPos = int(pos)
         s.lastInput = Click
         return true
-    } else if service == vpc.Keyboard {
+    case vpc.Keyboard:
         s.keyCode = msg[1]
         s.lastInput = KeyDown
+        return true
+    case vpc.Dialog:
+        s.choice = int(msg[1])
         return true
     }
 
