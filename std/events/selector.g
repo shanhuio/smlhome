@@ -46,20 +46,15 @@ func (s *Selector) pollInput(timeout *time.Timeout) bool {
     }
 
     msg := msgBuf[:n]
-    switch service {
-    case vpc.Table:
+    if service == vpc.Table {
         what, pos := handleTableClick(msg) // parse the message
         s.clickWhat = int(what)
         s.clickPos = int(pos)
         s.lastInput = Click
         return true
-    case vpc.Keyboard:
+    } else if service == vpc.Keyboard {
         s.keyCode = msg[1]
         s.lastInput = KeyDown
-        return true
-    case vpc.Dialog:
-        s.choice = int(msg[0])
-        s.lastInput = Choice
         return true
     }
 
@@ -84,7 +79,6 @@ func (s *Selector) poll(ticker *time.Ticker, timer *time.Timer) int {
 
 func (s *Selector) Select(ticker *time.Ticker, timer *time.Timer) int {
     ret := s.poll(ticker, timer)
-    printInt(ret)
     if ret != Nothing return ret
 
     var timeout time.Timeout

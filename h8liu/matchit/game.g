@@ -24,22 +24,16 @@ struct game {
 
 func initSelectDiv(d *table.Div, k uint8) {
     d.Key = k
-    d.BackgroundColor = 0x111111
+    d.BackgroundColor = lineColor
     d.Width = 44
     d.Height = 44
     d.BorderRadius = 5
     d.ZIndex = 1
 }
 
-func initLineDiv(d *table.Div) {
-    d.BackgroundColor = 0x111111
-    d.ZIndex = 1
-    d.BorderRadius = 1
-}
-
 // init sets up the game
 func (g *game) init() {
-    g.gapInterval.Iset(2e8)
+    g.gapInterval.Iset(200000000)
 
     initSelectDiv(&g.selectDiv1, uint8(nblock))
     initSelectDiv(&g.selectDiv2, uint8(nblock + 1))

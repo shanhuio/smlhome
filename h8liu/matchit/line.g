@@ -9,7 +9,7 @@ struct line {
 func (ln *line) init(k uint8) {
     d := &ln.div
     d.Key = k
-    d.BackgroundColor = 0x111111
+    d.BackgroundColor = lineColor
     d.ZIndex = 1
     d.BorderRadius = 1
 }

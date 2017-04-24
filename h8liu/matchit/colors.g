@@ -1,3 +1,11 @@
+// default: 0x111111
+// red: 0xcc0000
+// green: 0x006600
+// blue: 0x0000cc
+// yc yello: 0xf26522
+
+const lineColor = 0x111111
+
 var bgColors []uint
 
 const ncolor = 16

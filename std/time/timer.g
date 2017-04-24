@@ -17,6 +17,7 @@ func (t *Timer) Set(now, d *long.Long) {
 
 func (t *Timer) SetDeadline(d *long.Long) {
     t.deadline = *d
+    t.running = true
     t.restart()
 }
 
