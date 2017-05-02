@@ -28,7 +28,7 @@ func Println() {
     PrintChar('\n')
 }
 
-// PrintBool writes a boolean variable to standard output .
+// PrintBool writes a boolean variable to standard output.
 func PrintBool(b bool) {
     if b {
         PrintStr("true")
@@ -39,8 +39,8 @@ func PrintBool(b bool) {
 
 // PrintInt writes an int to standard output.
 func PrintInt(i int) {
-    // G only allows numbers within the range of int32
-    // form −2147483648 to 2147483647).
+    // G only allows numbers within the range of int32,
+    // form −2147483648 to 2147483647.
     // [11]byte is enough to write any legal integer, includes minus sign.
     var bs [11]byte
     var buf bytes.Buffer
@@ -50,9 +50,9 @@ func PrintInt(i int) {
     PrintBytes(buf.Bytes())
 }
 
-// PrintUint writes an uint to standard output
+// PrintUint writes an uint to standard output.
 func PrintUint(i uint) {
-    // Similar as PrintInt [10]bytes is used for uint32, without the minus sign
+    // Similar as PrintInt, [10]bytes is used for uint32, without minus sign.
     var bs [10]byte
     var buf bytes.Buffer
 

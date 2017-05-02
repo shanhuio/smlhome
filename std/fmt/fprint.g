@@ -30,6 +30,9 @@ func FprintUint(w *bytes.Buffer, i uint) {
         return
     }
 
+    // G only allows numbers within the range of int32,
+    // form −2147483648 to 2147483647.
+    // [10]char is enough to handle any legal integer
     var buf [10]char
     n := 0
     for i > 0 {
