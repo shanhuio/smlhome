@@ -1,9 +1,9 @@
-// Copyright 2017 The G Authors. All rights reserved.
+// Contributed by the G Authors. All rights reserved.
 // license that can be found in the LICENSE file.
 
-// fprint.g includes functions write to a bytes buffer
+// fprint.g includes functions write to a bytes buffer.
 
-// FprintBool writes a boolean variable to a bytes buffer
+// FprintBool writes a boolean variable to a bytes buffer.
 func FprintBool(w *bytes.Buffer, b bool) {
     if b {
         w.WriteString("true")
@@ -12,7 +12,7 @@ func FprintBool(w *bytes.Buffer, b bool) {
     }
 }
 
-// FprintInt writes an int to a bytes buffer
+// FprintInt writes an int to a bytes buffer.
 func FprintInt(w *bytes.Buffer, i int) {
     if i >= 0 {
         FprintUint(w, uint(i))
@@ -23,7 +23,7 @@ func FprintInt(w *bytes.Buffer, i int) {
     FprintUint(w, uint(-i))
 }
 
-// FprintBool writes an uint to a bytes buffer
+// FprintBool writes an uint to a bytes buffer.
 func FprintUint(w *bytes.Buffer, i uint) {
     if i == 0 {
         w.WriteChar('0')
