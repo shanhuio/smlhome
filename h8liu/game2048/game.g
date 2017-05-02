@@ -228,7 +228,7 @@ func (g *game) render(step int) {
     } else if g.lost {
         g.msg.Text = "No move. Game over."
     } else {
-        g.msg.Text = "Try to get 2048."
+        g.msg.Text = "Try to get 2048!"
     }
 
     boxes.Append(g.msg)
