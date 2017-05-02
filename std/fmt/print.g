@@ -38,15 +38,6 @@ func PrintBytes(bs []byte) {
     }
 }
 
-// PrintBool prints a boolean variable to standard output 
-func PrintBool(b bool) {
-    if b {
-        PrintStr("true")
-    } else {
-        PrintStr("false")
-    }
-}
-
 // PrintStr prints a string to standard output
 func PrintStr(s string) {
     for i := 0; i < len(s); i++ {
@@ -57,4 +48,13 @@ func PrintStr(s string) {
 // Println prints a line break
 func Println() {
     PrintChar('\n')
+}
+
+// PrintBool prints a boolean variable to standard output 
+func PrintBool(b bool) {
+    if b {
+        PrintStr("true")
+    } else {
+        PrintStr("false")
+    }
 }
