@@ -1,21 +1,18 @@
-func PrintInt(i int) {
-    var bs [10]byte
-    var buf bytes.Buffer
+// Copyright 2017 The G Authors. All rights reserved.
+// license that can be found in the LICENSE file.
 
-    buf.Init(bs[:])
-    FprintInt(&buf, i)
-    PrintBytes(buf.Bytes())
+// print.g includs functions which print into a bytes buffer
+
+// FprintBool prints a boolean variable to a bytes buffer
+func FprintBool(w *bytes.Buffer, b bool) {
+    if b {
+        w.WriteString("true")
+    } else {
+        w.WriteString("false")
+    }
 }
 
-func PrintUint(i uint) {
-    var bs [10]byte
-    var buf bytes.Buffer
-
-    buf.Init(bs[:])
-    FprintUint(&buf, i)
-    PrintBytes(buf.Bytes())
-}
-
+// FprintInt prints an int to a bytes buffer
 func FprintInt(w *bytes.Buffer, i int) {
     if i >= 0 {
         FprintUint(w, uint(i))
@@ -26,6 +23,7 @@ func FprintInt(w *bytes.Buffer, i int) {
     FprintUint(w, uint(-i))
 }
 
+// FprintBool prints an uint to a bytes buffer
 func FprintUint(w *bytes.Buffer, i uint) {
     if i == 0 {
         w.WriteChar('0')
