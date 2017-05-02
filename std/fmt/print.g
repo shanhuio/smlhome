@@ -3,28 +3,6 @@
 
 // print.g includs functions which print into standard output
 
-// PrintInt prints an int to standard output
-// G only allows numbers within the range of int32 (−2147483648 to 2147483647),
-// thus [10]byte is enough to print any legal integer 
-func PrintInt(i int) {
-    var bs [10]byte
-    var buf bytes.Buffer
-
-    buf.Init(bs[:])
-    FprintInt(&buf, i)
-    PrintBytes(buf.Bytes())
-}
-
-// PrintChar prints an uint to standard output
-func PrintUint(i uint) {
-    var bs [10]byte
-    var buf bytes.Buffer
-
-    buf.Init(bs[:])
-    FprintUint(&buf, i)
-    PrintBytes(buf.Bytes())
-}
-
 // PrintChar prints a char to standard output
 // printChar is a build-in function in g compiler
 func PrintChar(c char) {
@@ -57,4 +35,26 @@ func PrintBool(b bool) {
     } else {
         PrintStr("false")
     }
+}
+
+// PrintInt prints an int to standard output
+// G only allows numbers within the range of int32 (−2147483648 to 2147483647),
+// thus [10]byte is enough to print any legal integer 
+func PrintInt(i int) {
+    var bs [10]byte
+    var buf bytes.Buffer
+
+    buf.Init(bs[:])
+    FprintInt(&buf, i)
+    PrintBytes(buf.Bytes())
+}
+
+// PrintChar prints an uint to standard output
+func PrintUint(i uint) {
+    var bs [10]byte
+    var buf bytes.Buffer
+
+    buf.Init(bs[:])
+    FprintUint(&buf, i)
+    PrintBytes(buf.Bytes())
 }
