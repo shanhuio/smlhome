@@ -1,6 +1,3 @@
-// Contributed by the G Authors. All rights reserved.
-// license that can be found in the LICENSE file.
-
 // print.g includes functions write to standard output.
 
 // PrintChar writes a char to standard output.

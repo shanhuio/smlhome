@@ -1,6 +1,3 @@
-// Contributed by the G Authors. All rights reserved.
-// license that can be found in the LICENSE file.
-
 // fprint.g includes functions write to a bytes buffer.
 
 // FprintBool writes a boolean variable to a bytes buffer.
