@@ -1,5 +1,3 @@
-// print.g includes functions write to standard output.
-
 // PrintChar writes a char to standard output.
 func PrintChar(c char) {
     // printChar is a build-in function in g compiler.

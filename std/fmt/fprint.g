@@ -1,5 +1,3 @@
-// fprint.g includes functions write to a bytes buffer.
-
 // FprintBool writes a boolean variable to a bytes buffer.
 func FprintBool(w *bytes.Buffer, b bool) {
     if b {
