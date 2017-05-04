@@ -39,10 +39,10 @@ To run test, run `sml -test`, or simply `make test`. It will perform
 all tests in all the packages, similar to `go test ./...` in Go
 language.
 
-## Run a image
+## Run a Program
 
-After compiling, use `smlvm <binary>.bin` to run a particular binary.
-For example:
+After compiling, use `smlvm <binary>.bin` to run a particular
+package's binary. For example:
 
 ```
 $ smlvm _/bin/h8liu/helloworld.bin
