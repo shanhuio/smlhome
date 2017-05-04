@@ -1,35 +1,55 @@
 [![BuildStatus](https://travis-ci.org/shanhuio/smlhome.png?branch=master)](https://travis-ci.org/shanhuio/smlhome)
 
-## Small home
-Together with Small VM:https://github.com/shanhuio/smlvm
-Small home provides an enviranment to run G language locally.
-Small home includes the standard library and examples of G language code.
+# Small Home
 
-## Make and Run:
-Make sure you have Small VM installed at your computer under [~/directory/?]
+This repository contains all code hosted on
+[smallrepo](https://smallrepo.com), which consists of the G language
+standard library and some example programs.
 
-### Make
-~/smlhome$ make
+This repository allows a user to run G language code on smallrepo
+locally using
+[Small Virtual Machine](https://github.com/shanhuio/smlvm)
 
-This command will compile all .g files under ~/smlhome directory.
+## Build
 
-The binaries for each packages are located at ~/smlhome/\_/bin/
-### Format
-~/smlhome$ make fmt
+Install [Small Virtual Machine](https://github.com/shanhuio/smlvm):
 
-This command will fmt all .g files under ~/smlhome directory, similar to go fmt ./...
-### Test
-~/smlhome$ make test
+```
+$ go get -u shanhu.io/smlvm
+```
 
-This command will perform all test functions in .g files, similar to go test ./...
-### Run
-After compiling, use smlvm binary.e8 to run, e.g.:
+To build all the G language code, run under the root of this
+repository:
 
-~$ smlvm smlhome/\_/bin/h8liu/helloworld.e8
+```
+$ sml
+```
 
-Now only we only suport std output under Small home,
+Or simply type `make`. It will output the results to the folder `_`,
+The binary images for packages that contains a `main()` function
+resides in `_/bin`.
 
-visit http://smallrepo.com to explore more features!
+## Format
 
+To format code, run `make fmt`, which will format all `.g` files.
 
-Enjoy!
+## Run Tests
+
+To run test, run `sml -test`, or simply `make test`. It will perform
+all tests in all the packages, similar to `go test ./...` in Go
+language.
+
+## Run a image
+
+After compiling, use `smlvm <binary>.bin` to run a particular binary.
+For example:
+
+```
+$ smlvm _/bin/h8liu/helloworld.bin
+```
+
+The `smlvm` command only supports output to `stdout` for now.
+
+--
+
+Visit [smallrepo](https://smallrepo.com) for more information.
