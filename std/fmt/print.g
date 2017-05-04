@@ -1,6 +1,6 @@
 // PrintChar writes a char to standard output.
 func PrintChar(c char) {
-    // printChar is a build-in function in g compiler.
+    // printChar is a build-in function in G compiler.
     printChar(c)
 }
 
@@ -34,9 +34,7 @@ func PrintBool(b bool) {
 
 // PrintInt writes an int to standard output.
 func PrintInt(i int) {
-    // G only allows numbers within the range of int32,
-    // form −2147483648 to 2147483647.
-    // [11]byte is enough to write any legal integer, includes minus sign.
+    // int32 ranges from −2147483648 to 2147483647, and requires 11 chars.
     var bs [11]byte
     var buf bytes.Buffer
 
@@ -47,7 +45,7 @@ func PrintInt(i int) {
 
 // PrintUint writes an uint to standard output.
 func PrintUint(i uint) {
-    // Similar as PrintInt, [10]bytes is used for uint32, without minus sign.
+    // uint32 ranges from 0 to 4294967295, and requires 10 chars
     var bs [10]byte
     var buf bytes.Buffer
 
