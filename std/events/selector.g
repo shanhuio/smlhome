@@ -56,6 +56,10 @@ func (s *Selector) pollInput(timeout *time.Timeout) bool {
         s.keyCode = msg[1]
         s.lastInput = KeyDown
         return true
+    } else if service == vpc.Dialog {
+        s.choice = int(msg[0])
+        s.lastInput = Choice
+        return true
     }
 
     fmt.PrintStr("unknown service input\n")
