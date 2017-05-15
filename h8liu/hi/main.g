@@ -16,10 +16,10 @@ func main() {
     case 0:
         dialog.Say("...")
     case 1:
-        dialog.Say("I'm fine too")
+        dialog.Say("I'm fine too.")
     case 2:
-        dialog.Say("Look at the bright side. Get better soon")
+        dialog.Say("Look at the bright side. Get better soon.")
     default:
-        dialog.Say("Well, I will ask you again then")
+        dialog.Say("Well, I will ask you again then.")
     }
 }
