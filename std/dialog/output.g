@@ -1,12 +1,6 @@
-var msgBuf [1300]byte
+var msgBuf [1500]byte
 
-func call(buf []byte) {
-    _, err := vpc.Call(vpc.Dialog, buf, nil)
-    if err != 0 {
-        printInt(err)
-        panic()
-    }
-}
+var msgPacket vpc.Packet
 
 const (
     cmdSay = 0
@@ -14,35 +8,49 @@ const (
     cmdWaitChoice = 2
 )
 
+func prepare() *vpc.Packet {
+    p := &msgPacket
+    p.Init(msgBuf[:])
+    return p
+}
+
+func call(p *vpc.Packet, n int) {
+    var h vpc.PacketHeader
+    h.DestPort = vpc.PortDialog
+    p.SetHeader(&h, n)
+    vpc.Send(p, n)
+}
+
 // Say sends a message to the client
 func Say(msg string) {
     var enc coder.Encoder
-    enc.Init(msgBuf[:])
+    p := prepare()
+    p.PayloadCoder(&enc)
     enc.U8(cmdSay)
     enc.I32(len(msg))
     enc.Str(msg)
-
-    call(enc.Bytes())
+    call(p, enc.Len())
 }
 
 // Choose asks for a choice among several options. Returns -1 when timeout.
 func Choose(choices []string, sec int) int {
     var enc coder.Encoder
+    p := prepare()
+
     n := len(choices)
     for i := 0; i < n; i++ {
+        p.PayloadCoder(&enc)
         msg := choices[i]
-        enc.Init(msgBuf[:])
         enc.U8(cmdChoice)
         enc.U8(uint8(i))
         enc.I32(len(msg))
         enc.Str(msg)
-
-        call(enc.Bytes())
+        call(p, enc.Len())
     }
 
-    enc.Init(msgBuf[:])
+    p.PayloadCoder(&enc)
     enc.U8(cmdWaitChoice)
-    call(enc.Bytes())
+    call(p, enc.Len())
 
     // cook the deadline
     var timer time.Timer

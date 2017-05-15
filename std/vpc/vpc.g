@@ -25,6 +25,25 @@ func init() {
     vpc = (*control)(uint(page))
 }
 
+func sendPacket(p []byte) int {
+    vpc.service = 0
+    vpc.control = 2
+    if p != nil {
+        vpc.reqAddr = uint(&p[0])
+        vpc.reqLen = len(p)
+    } else {
+        vpc.reqAddr = 0
+        vpc.reqLen = 0
+    }
+
+    vpc.respAddr = 0
+    vpc.respSize = 0
+
+    iocall()
+
+    return vpc.respCode
+}
+
 // Call performs a VPC call.
 func Call(s uint, req, resp []byte) (n int, err int) {
     vpc.service = s

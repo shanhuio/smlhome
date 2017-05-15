@@ -6,9 +6,27 @@ func (c *Encoder) Init(bs []byte) {
     c.buf.Init(bs)
 }
 
-func (c *Encoder) U32(u uint32) {
+func (c *Encoder) U32(v uint32) {
     var buf [4]byte
-    binary.PutU32(buf[:], u)
+    binary.PutU32(buf[:], v)
+    c.buf.Write(buf[:])
+}
+
+func (c *Encoder) U32B(v uint32) {
+    var buf [4]byte
+    binary.PutU32B(buf[:], v)
+    c.buf.Write(buf[:])
+}
+
+func (c *Encoder) U16(v uint32) {
+    var buf [2]byte
+    binary.PutU16(buf[:], v)
+    c.buf.Write(buf[:])
+}
+
+func (c *Encoder) U16B(v uint32) {
+    var buf [2]byte
+    binary.PutU16B(buf[:], v)
     c.buf.Write(buf[:])
 }
 
@@ -34,4 +52,8 @@ func (c *Encoder) Str(s string) {
 
 func (c *Encoder) Bytes() []byte {
     return c.buf.Bytes()
+}
+
+func (c *Encoder) Len() int {
+    return c.buf.Len()
 }
