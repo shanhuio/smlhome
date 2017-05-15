@@ -16,7 +16,7 @@ struct Selector {
     choice int
 }
 
-var msgBuf [16]byte
+var msgBuf [1500]byte
 
 func (s *Selector) LastClick() (int, int) {
     return s.clickWhat, s.clickPos
@@ -35,6 +35,22 @@ func handleTableClick(buf []byte) (uint8, uint8) {
     return buf[0], buf[1]
 }
 
+func (s *Selector) handlePacket(p []byte) {
+    if len(p) < vpc.PacketHeaderLen return // header missing
+    h := p[:vpc.PacketHeaderLen]
+    destPort := binary.U16B(h[12:14])
+    payload := p[vpc.PacketHeaderLen:]
+    switch destPort {
+    case 1001:
+        if len(payload) > 0 {
+            s.choice = int(payload[0])
+            s.lastInput = Choice
+        }
+    default:
+        printUint(destPort)
+    }
+}
+
 func (s *Selector) pollInput(timeout *time.Timeout) bool {
     now := time.Now()
     wait := timeout.Get(&now)
@@ -46,7 +62,10 @@ func (s *Selector) pollInput(timeout *time.Timeout) bool {
     }
 
     msg := msgBuf[:n]
-    if service == vpc.Table {
+    if service == 0 {
+        s.handlePacket(msg)
+        return true
+    } else if service == vpc.Table {
         what, pos := handleTableClick(msg) // parse the message
         s.clickWhat = int(what)
         s.clickPos = int(pos)

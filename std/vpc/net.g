@@ -1,4 +1,5 @@
-const packetHeaderLen = 16
+// PacketHeaderLen is the length of the packet header.
+const PacketHeaderLen = 16
 
 const (
     PortDialog = 1001
@@ -21,7 +22,7 @@ func (p *Packet) Init(buf []byte) {
 }
 
 func (p *Packet) Payload() []byte {
-    return p.buf[packetHeaderLen:]
+    return p.buf[PacketHeaderLen:]
 }
 
 func (p *Packet) PayloadBuffer(buf *bytes.Buffer) {
@@ -34,9 +35,9 @@ func (p *Packet) PayloadCoder(coder *coder.Encoder) {
 
 func (p *Packet) SetHeader(h *PacketHeader, n int) {
     var w coder.Encoder
-    w.Init(p.buf[:packetHeaderLen])
+    w.Init(p.buf[:PacketHeaderLen])
     w.U16(0)
-    w.U16B(uint32(packetHeaderLen + n))
+    w.U16B(uint32(PacketHeaderLen + n))
     w.U32B(h.Dest)
     w.U32B(h.Src)
     w.U16B(h.DestPort)
@@ -44,5 +45,5 @@ func (p *Packet) SetHeader(h *PacketHeader, n int) {
 }
 
 func Send(p *Packet, n int) int {
-    return sendPacket(p.buf[:packetHeaderLen + n])
+    return sendPacket(p.buf[:PacketHeaderLen + n])
 }
