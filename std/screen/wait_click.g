@@ -1,10 +1,18 @@
 var buf [vpc.MaxLen]byte
 
-func HandleClick(buf []byte) (int, int, bool) {
-    if len(buf) < 2 return 0, 0, false
+const portTerminal = 1004
 
-    x := int(buf[0])
-    y := int(buf[1])
+func HandleClick(p []byte) (int, int, bool) {
+    if len(p) < vpc.PacketHeaderLen return 0, 0, false
+    h := p[:vpc.PacketHeaderLen]
+    destPort := binary.U16B(h[12:14])
+    payload := p[vpc.PacketHeaderLen:]
+
+    if destPort != portTerminal return 0, 0, false
+    if len(payload) < 2 return 0, 0, false
+
+    x := int(payload[0])
+    y := int(payload[1])
     return x, y, true
 }
 
@@ -20,7 +28,7 @@ func WaitClick(nanos *long.Long) (int, int, bool) {
         panic()
     }
 
-    if s == 2 {
+    if s == 0 {
         return HandleClick(buf[:n])
     }
 

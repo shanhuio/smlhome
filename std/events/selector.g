@@ -7,6 +7,13 @@ const (
     Choice = 5
 )
 
+const (
+    portDialog = 1001
+    portTable = 1002
+    portKeyboard = 1003
+    portTerminal = 1004
+)
+
 struct Selector {
     lastInput int
     clickWhat int
@@ -41,17 +48,17 @@ func (s *Selector) handlePacket(p []byte) {
     destPort := binary.U16B(h[12:14])
     payload := p[vpc.PacketHeaderLen:]
     switch destPort {
-    case 1001: // dialog choice
+    case portDialog:
         if len(payload) > 0 {
             s.choice = int(payload[0])
             s.lastInput = Choice
         }
-    case 1002: // table click
+    case portTable:
         what, pos := handleTableClick(payload)
         s.clickWhat = int(what)
         s.clickPos = int(pos)
         s.lastInput = Click
-    case 1003: // keydown
+    case portKeyboard:
         if len(payload) > 0 {
             s.keyCode = payload[0]
             s.lastInput = KeyDown
