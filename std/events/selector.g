@@ -41,10 +41,20 @@ func (s *Selector) handlePacket(p []byte) {
     destPort := binary.U16B(h[12:14])
     payload := p[vpc.PacketHeaderLen:]
     switch destPort {
-    case 1001:
+    case 1001: // dialog choice
         if len(payload) > 0 {
             s.choice = int(payload[0])
             s.lastInput = Choice
+        }
+    case 1002: // table click
+        what, pos := handleTableClick(payload)
+        s.clickWhat = int(what)
+        s.clickPos = int(pos)
+        s.lastInput = Click
+    case 1003: // keydown
+        if len(payload) > 0 {
+            s.keyCode = payload[0]
+            s.lastInput = KeyDown
         }
     default:
         printUint(destPort)
@@ -64,20 +74,6 @@ func (s *Selector) pollInput(timeout *time.Timeout) bool {
     msg := msgBuf[:n]
     if service == 0 {
         s.handlePacket(msg)
-        return true
-    } else if service == vpc.Table {
-        what, pos := handleTableClick(msg) // parse the message
-        s.clickWhat = int(what)
-        s.clickPos = int(pos)
-        s.lastInput = Click
-        return true
-    } else if service == vpc.Keyboard {
-        s.keyCode = msg[1]
-        s.lastInput = KeyDown
-        return true
-    } else if service == vpc.Dialog {
-        s.choice = int(msg[0])
-        s.lastInput = Choice
         return true
     }
 

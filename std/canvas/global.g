@@ -26,8 +26,9 @@ func Render(boxes *BoxArray) {
 
 func UpdateBoxClass(cls *BoxClass) {
     var enc coder.Encoder
-    enc.Init(msgBuf[:])
+    p := prepare()
+    p.PayloadCoder(&enc)
     enc.U8(boxClassUpdate)
     cls.encode(&enc)
-    call(enc.Bytes())
+    call(p, enc.Len())
 }

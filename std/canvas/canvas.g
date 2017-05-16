@@ -63,17 +63,19 @@ func (c *canvas) render(boxes *BoxArray) {
         if !shadow.update(b) continue
 
         var enc coder.Encoder
-        enc.Init(msgBuf[:])
+        p := prepare()
+        p.PayloadCoder(&enc)
         enc.U8(boxUpdate)
         shadow.marshal(id, &enc)
-        call(enc.Bytes())
+        call(p, enc.Len())
     }
 
     var enc coder.Encoder
-    enc.Init(msgBuf[:])
+    p := prepare()
+    p.PayloadCoder(&enc)
     enc.U8(boxShow)
     visible.marshal(&enc)
-    call(enc.Bytes())
+    call(p, enc.Len())
 
     sendCommit()
 }

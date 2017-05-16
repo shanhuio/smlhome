@@ -1,11 +1,18 @@
 var msgBuf [1300]byte
 
-func call(buf []byte) {
-    _, err := vpc.Call(vpc.Table, buf, nil)
-    if err != 0 {
-        printInt(err)
-        panic()
-    }
+var msgPacket vpc.Packet
+
+func prepare() *vpc.Packet {
+    p := &msgPacket
+    p.Init(msgBuf[:])
+    return p
+}
+
+func call(p *vpc.Packet, n int) {
+    var h vpc.PacketHeader
+    h.DestPort = vpc.PortTable
+    p.SetHeader(&h, n)
+    vpc.Send(p, n)
 }
 
 const (
@@ -37,9 +44,11 @@ const (
 )
 
 func actCommit() {
-    buf := msgBuf[:1]
-    buf[0] = 0
-    call(buf)
+    var enc coder.Encoder
+    p := prepare()
+    p.PayloadCoder(&enc)
+    enc.U8(0)
+    call(p, enc.Len())
 }
 
 func act(action, pos uint8) {
@@ -47,46 +56,45 @@ func act(action, pos uint8) {
 }
 
 func actChar(action, pos uint8, face char) {
-    buf := msgBuf[:4]
-    buf[0] = action
-    buf[1] = pos
-    buf[2] = uint8(face)
-    call(buf)
+    var enc coder.Encoder
+    p := prepare()
+    p.PayloadCoder(&enc)
+    enc.U8(action)
+    enc.U8(pos)
+    enc.U8(uint8(face))
+    enc.Pad(1)
+    call(p, enc.Len())
 }
 
 func actNums(action uint8, n1, n2 int) {
-    buf := msgBuf[:10]
-    buf[0] = action
-    buf[1] = 0
-    binary.PutI32(buf[2:6], n1)
-    binary.PutI32(buf[6:10], n2)
-    call(buf)
+    var enc coder.Encoder
+    p := prepare()
+    p.PayloadCoder(&enc)
+    enc.U8(action)
+    enc.U8(0)
+    enc.I32(n1)
+    enc.I32(n2)
+    call(p, enc.Len())
 }
 
 func actString(action, pos uint8, s string) {
-    n := len(s)
-    end := n + 3
-    if end > len(msgBuf) {
-        end = len(msgBuf)
-    }
-    buf := msgBuf[:end]
-    buf[0] = action
-    buf[1] = pos
-    buf[2] = uint8(n)
-    for i := 3; i < end; i++ {
-        buf[i] = byte(s[i - 3])
-    }
-    call(buf)
+    var enc coder.Encoder
+    p := prepare()
+    p.PayloadCoder(&enc)
+    enc.U8(action)
+    enc.U8(pos)
+    enc.U8(uint8(len(s)))
+    enc.Str(s)
+    call(p, enc.Len())
 }
 
 func actBytes(action, pos uint8, bs []byte) {
-    n := len(bs)
-    buf := msgBuf[:n + 3]
-    buf[0] = action
-    buf[1] = pos
-    buf[2] = uint8(n)
-    for i := 0; i < n; i++ {
-        buf[3 + i] = bs[i]
-    }
-    call(buf)
+    var enc coder.Encoder
+    p := prepare()
+    p.PayloadCoder(&enc)
+    enc.U8(action)
+    enc.U8(pos)
+    enc.U8(uint8(len(bs)))
+    enc.Write(bs)
+    call(p, enc.Len())
 }

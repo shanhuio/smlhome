@@ -1,11 +1,18 @@
 var msgBuf [1300]byte
 
-func call(buf []byte) {
-    _, err := vpc.Call(vpc.Table, buf, nil)
-    if err != 0 {
-        printInt(err)
-        panic()
-    }
+var msgPacket vpc.Packet
+
+func prepare() *vpc.Packet {
+    p := &msgPacket
+    p.Init(msgBuf[:])
+    return p
+}
+
+func call(p *vpc.Packet, n int) {
+    var h vpc.PacketHeader
+    h.DestPort = vpc.PortTable
+    p.SetHeader(&h, n)
+    vpc.Send(p, n)
 }
 
 const (
@@ -17,7 +24,9 @@ const (
 )
 
 func sendCommit() {
-    buf := msgBuf[:1]
-    buf[0] = 0
-    call(buf)
+    var enc coder.Encoder
+    p := prepare()
+    p.PayloadCoder(&enc)
+    enc.U8(0)
+    call(p, enc.Len())
 }

@@ -86,11 +86,12 @@ func (t *table) render() {
         index, ok := t.dirtyDivs.iter(&i)
         if !ok break
 
+        p := prepare()
         var enc coder.Encoder
-        enc.Init(msgBuf[:])
+        p.PayloadCoder(&enc)
         enc.U8(divUpdate)
         t.divs[index].encode(&enc)
-        call(enc.Bytes())
+        call(p, enc.Len())
     }
     t.dirtyDivs.clear()
 

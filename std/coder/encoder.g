@@ -6,6 +6,12 @@ func (c *Encoder) Init(bs []byte) {
     c.buf.Init(bs)
 }
 
+func (c *Encoder) Pad(n int) {
+    for i := 0; i < n; i++ {
+        c.buf.WriteByte(0)
+    }
+}
+
 func (c *Encoder) U32(v uint32) {
     var buf [4]byte
     binary.PutU32(buf[:], v)
@@ -48,6 +54,10 @@ func (c *Encoder) Bool(b bool) {
 
 func (c *Encoder) Str(s string) {
     c.buf.WriteString(s)
+}
+
+func (c *Encoder) Write(bs []byte) {
+    c.buf.Write(bs)
 }
 
 func (c *Encoder) Bytes() []byte {

@@ -3,7 +3,7 @@ const PacketHeaderLen = 16
 
 const (
     PortDialog = 1001
-    PortScreen = 1002
+    PortTable = 1002
 )
 
 struct Packet {
