@@ -14,35 +14,5 @@ Elevetor scheduling is a stepped game.
 
 const MaxFloor = 32
 
-struct Bitmap {
-    m uint32
-}
-
-struct Lights {
-    Dest Bitmap
-    NeedUp, NeedDown Bitmap
-}
-
-struct State {
-    Dests []Bitmap
-    NeedUp, NeedDown Bitmap
-    Queuing []int
-}
-
-struct Person {
-    Dest int
-    Next *Person
-}
-
-struct elevator {
-    cur int
-}
-
-struct Simulator {
-    Dests [2]Bitmap
-    NeedUp, NeedDown Bitmap
-    Queues []*Person
-}
-
 func main() {
 }
