@@ -42,7 +42,7 @@ func loadLift(f *floor, l *lift) {
 }
 
 func shuffleLifts(l0, l1 *lift) (*lift, *lift) {
-    // TODO: random
+    if rand.IntN(2) == 0 return l1, l0
     return l0, l1
 }
 
