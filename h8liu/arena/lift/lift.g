@@ -12,7 +12,7 @@ struct lift {
     action int
 }
 
-func (l *lift) applyAction() {
+func (l *lift) applyAction(nfloor int) {
     switch l.action {
     case ActionNoop:
     case ActionOpenDoor:

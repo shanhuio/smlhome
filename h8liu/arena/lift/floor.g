@@ -1,4 +1,4 @@
-const nfloor = 30
+const maxFloor = 32
 
 struct floor {
     number int

@@ -1,10 +1,12 @@
 struct simulator {
+	nfloor int
     lifts [nlift]lift
-    floors [nfloor]floor
+    floors [maxFloor]floor
 }
 
-func (s *simulator) init() {
-    for i := 0; i < nfloor; i++ {
+func (s *simulator) init(nfloor int) {
+	s.nfloor = nfloor
+    for i := 0; i < s.nfloor; i++ {
         s.floors[i].init(i)
     }
 }
@@ -62,8 +64,8 @@ func (s *simulator) step() {
     l0 := &s.lifts[0]
     l1 := &s.lifts[1]
 
-    l0.applyAction()
-    l1.applyAction()
+    l0.applyAction(s.nfloor)
+    l1.applyAction(s.nfloor)
 
     l0.unload()
     l1.unload()

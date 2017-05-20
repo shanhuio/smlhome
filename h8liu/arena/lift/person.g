@@ -1,7 +1,7 @@
 struct person {
     src int // from which floor
     dest int // to which floor
-    expire int // time point where the person will give up and go with floors
+    expire int // time point where the person will give up and go with stairs
     next *person
 }
 
