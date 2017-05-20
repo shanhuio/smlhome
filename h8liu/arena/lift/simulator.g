@@ -60,7 +60,34 @@ func loadLifts(f *floor, l0, l1 *lift) {
     queueToLifts(f.queue(l0.direction), l0, l1)
 }
 
+func (s *simulator) addPerson(src, dest int) {
+    if src == dest return
+    s.floors[src].add(dest)
+}
+
 func (s *simulator) addPersons() {
+    // we just add one person for now
+    r := rand.Int()
+    if (r & 0x1) == 0 return
+    r >>= 1
+
+    bit := r & 0x1
+    r >>= 1
+    if bit == 0 {
+        if (r & 0x1) == 0 {
+            src := r % s.nfloor
+            s.addPerson(src, 0)
+        } else {
+            dest := r % s.nfloor
+            s.addPerson(0, dest)
+        }
+    } else {
+        src := r % s.nfloor
+        r /= s.nfloor
+        dest := r % s.nfloor
+        s.addPerson(src, dest)
+    }
+
     // TODO: add persons to floors
 }
 

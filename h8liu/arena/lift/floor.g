@@ -21,13 +21,13 @@ func (f *floor) queue(direction int) **person {
     return nil
 }
 
-func (f *floor) add(dest int, expire int) {
+func (f *floor) add(dest int) {
     if dest == f.number return
 
     p := allocPerson()
     p.src = f.number
     p.dest = dest
-    p.expire = expire
+    p.expire = -1
 
     insertPerson(&f.emerging, p)
 }
