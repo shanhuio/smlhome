@@ -13,53 +13,6 @@ func (s *simulator) init(nfloor int) {
     }
 }
 
-func queueToLift(pp **person, l *lift) {
-    for *pp != nil {
-        l.load(removePerson(pp))
-        if l.full() return
-    }
-}
-
-func queueToLifts(pp **person, l0, l1 *lift) {
-    l0, l1 = shuffleLifts(l0, l1)
-
-    for *pp != nil {
-        if l0.full() break
-        l0.load(removePerson(pp))
-        l0, l1 = l1, l0
-    }
-
-    if l0.full() {
-        queueToLift(pp, l1)
-        return
-    }
-    if l1.full() {
-        queueToLift(pp, l0)
-        return
-    }
-}
-
-func loadLift(f *floor, l *lift) {
-    if l.full() return
-    if l.direction == 0 return
-    queueToLift(f.queue(l.direction), l)
-}
-
-func shuffleLifts(l0, l1 *lift) (*lift, *lift) {
-    if rand.IntN(2) == 0 return l1, l0
-    return l0, l1
-}
-
-func loadLifts(f *floor, l0, l1 *lift) {
-    if l0.direction != l1.direction {
-        loadLift(f, l0)
-        loadLift(f, l1)
-        return
-    }
-    if l0.direction == 0 return
-    queueToLifts(f.queue(l0.direction), l0, l1)
-}
-
 func (s *simulator) addPerson(src, dest int) {
     if src == dest return
     s.floors[src].add(dest)
@@ -132,5 +85,26 @@ func (s *simulator) step() {
 }
 
 func (s *simulator) schedule() {
-    // TODO:
+	var ups, downs Bitmap
+	for i := 0; i < s.nfloor; i++ {
+		if s.floors[i].buttonUp {
+			ups.Set(i)
+		}
+		if s.floors[i].buttonDown {
+			downs.Set(i)
+		}
+	}
+	
+	var v0 View
+	v0.FloorUpButtons = ups
+	v0.FloorDownButtons = downs
+	v0.InsideButtons = s.lifts[0].buttons
+	v0.OtherLift = s.lifts[1].floor
+
+	var v1 View
+	v1.FloorUpButtons = ups
+	v1.FloorDownButtons = downs
+	v1.InsideButtons = s.lifts[1].buttons
+	v1.OtherLift = s.lifts[0].floor
+
 }

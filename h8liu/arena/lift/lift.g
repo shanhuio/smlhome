@@ -7,7 +7,7 @@ struct lift {
     doorOpen bool // if the door is opened
     passengers *person // passengers inside the lift
     npassenger int
-    buttons bitmap // the state of the lift buttons
+    buttons Bitmap // the state of the lift buttons
     direction int // 1 for up, 0 for noop, -1 for down
     action int
 }
@@ -17,7 +17,7 @@ func (l *lift) applyAction(nfloor int) {
     case ActionNoop:
     case ActionOpenDoor:
         l.doorOpen = true
-        l.buttons.clear(l.floor)
+        l.buttons.Clear(l.floor)
     case ActionCloseDoor:
         l.doorOpen = false
     case ActionUp:
@@ -56,6 +56,7 @@ func (l *lift) load(p *person) bool {
     if !l.doorOpen return false
     if l.full() return false
     insertPerson(&l.passengers, p)
+	l.buttons.Set(p.dest)
     l.npassenger++
     return true
 }
