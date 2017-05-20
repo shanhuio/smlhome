@@ -1,11 +1,11 @@
 struct simulator {
-	nfloor int
+    nfloor int
     lifts [nlift]lift
     floors [maxFloor]floor
 }
 
 func (s *simulator) init(nfloor int) {
-	s.nfloor = nfloor
+    s.nfloor = nfloor
     for i := 0; i < s.nfloor; i++ {
         s.floors[i].init(i)
     }
