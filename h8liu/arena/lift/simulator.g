@@ -1,4 +1,5 @@
 struct simulator {
+    t int
     nfloor int
     lifts [nlift]lift
     floors [maxFloor]floor
@@ -6,6 +7,7 @@ struct simulator {
 
 func (s *simulator) init(nfloor int) {
     s.nfloor = nfloor
+    s.t = 0
     for i := 0; i < s.nfloor; i++ {
         s.floors[i].init(i)
     }
@@ -58,9 +60,15 @@ func loadLifts(f *floor, l0, l1 *lift) {
     queueToLifts(f.queue(l0.direction), l0, l1)
 }
 
-func (s *simulator) step() {
+func (s *simulator) addPersons() {
     // TODO: add persons to floors
+}
 
+func (s *simulator) now() int {
+    return s.t
+}
+
+func (s *simulator) step() {
     l0 := &s.lifts[0]
     l1 := &s.lifts[1]
 
@@ -92,4 +100,10 @@ func (s *simulator) step() {
             f1.pushButtons()
         }
     }
+
+    s.t++
+}
+
+func (s *simulator) schedule() {
+    // TODO:
 }

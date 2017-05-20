@@ -12,5 +12,15 @@ Elevetor scheduling is a stepped game.
 - Elevator can read the internal button state at each floor.
 */
 
+var theSim simulator
+
 func main() {
+    s := &theSim
+    s.init(3)
+
+    for s.now() < 60 {
+        s.addPersons()
+        s.step()
+        s.schedule()
+    }
 }
