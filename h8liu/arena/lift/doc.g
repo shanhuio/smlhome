@@ -12,7 +12,5 @@ Elevetor scheduling is a stepped game.
 - Elevator can read the internal button state at each floor.
 */
 
-const MaxFloor = 32
-
 func main() {
 }
