@@ -25,6 +25,7 @@ func queueToLifts(pp **person, l0, l1 *lift) {
 }
 
 func loadLift(f *floor, l *lift) {
+    if !l.doorOpen return
     if l.full() return
     if l.direction == 0 return
     queueToLift(f.queue(l.direction), l)
@@ -36,6 +37,12 @@ func shuffleLifts(l0, l1 *lift) (*lift, *lift) {
 }
 
 func loadLifts(f *floor, l0, l1 *lift) {
+    if !l1.doorOpen {
+        loadLift(f, l0)
+    }
+    if !l0.doorOpen {
+        loadLift(f, l1)
+    }
     if l0.direction != l1.direction {
         loadLift(f, l0)
         loadLift(f, l1)

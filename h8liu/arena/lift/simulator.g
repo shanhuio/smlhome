@@ -3,12 +3,15 @@ struct simulator {
     nfloor int
     lifts [nlift]lift
     floors [maxFloor]floor
+
+    ups Bitmap
+    downs Bitmap
 }
 
 func (s *simulator) init(nfloor int) {
     s.nfloor = nfloor
     s.t = 0
-    for i := 0; i < s.nfloor; i++ {
+    for i := 0; i < nfloor; i++ {
         s.floors[i].init(i)
     }
 }
@@ -40,15 +43,34 @@ func (s *simulator) addPersons() {
         dest := r % s.nfloor
         s.addPerson(src, dest)
     }
-
-    // TODO: add persons to floors
 }
 
 func (s *simulator) now() int {
     return s.t
 }
 
+func (s *simulator) printState() {
+    for i := s.nfloor - 1; i >= 0; i-- {
+        f := &s.floors[i]
+        if f.quiet() continue
+        f.printState()
+        fmt.Println()
+    }
+
+    fmt.PrintStr("L0: ")
+    s.lifts[0].printState(s.nfloor)
+    fmt.Println()
+
+    fmt.PrintStr("L1: ")
+    s.lifts[1].printState(s.nfloor)
+    fmt.Println()
+}
+
 func (s *simulator) step() {
+    for i := 0; i < s.nfloor; i++ {
+        s.floors[i].update()
+    }
+
     l0 := &s.lifts[0]
     l1 := &s.lifts[1]
 
@@ -61,8 +83,12 @@ func (s *simulator) step() {
     f0 := &s.floors[l0.floor]
     f1 := &s.floors[l1.floor]
 
-    f0.popButton(l0.direction)
-    f1.popButton(l1.direction)
+    if l0.doorOpen {
+        f0.popButton(l0.direction)
+    }
+    if l1.doorOpen {
+        f1.popButton(l1.direction)
+    }
 
     if f0 == f1 {
         loadLifts(f0, l0, l1)
@@ -71,22 +97,12 @@ func (s *simulator) step() {
         loadLift(f1, l1)
     }
 
-    if l0.doorOpen {
-        f0.pushButtons()
-    }
-
-    if f0 != f1 {
-        if l1.doorOpen {
-            f1.pushButtons()
-        }
-    }
-
     s.t++
 }
 
 var sched0, sched1 scheduler
 
-func (s *simulator) schedule() {
+func (s *simulator) prepareButtons() {
     var ups, downs Bitmap
     for i := 0; i < s.nfloor; i++ {
         if s.floors[i].buttonUp {
@@ -97,21 +113,32 @@ func (s *simulator) schedule() {
         }
     }
 
-    var v0 View
-    v0.FloorUpButtons = ups
-    v0.FloorDownButtons = downs
-    v0.InsideButtons = s.lifts[0].buttons
-    v0.OtherLift = s.lifts[1].floor
-    var a0 Action
-    sched0.schedule(&v0, &a0)
-    s.lifts[0].saveAction(&a0)
+    s.ups = ups
+    s.downs = downs
+}
 
-    var v1 View
-    v1.FloorUpButtons = ups
-    v1.FloorDownButtons = downs
-    v1.InsideButtons = s.lifts[1].buttons
-    v1.OtherLift = s.lifts[0].floor
-    var a1 Action
-    sched1.schedule(&v1, &a1)
-    s.lifts[1].saveAction(&a1)
+func (s *simulator) fillView(v *View, this, other *lift) {
+    v.Nfloor = s.nfloor
+    v.DoorOpen = this.doorOpen
+    v.Npassenger = this.npassenger
+    v.Current = this.floor
+    v.FloorUpButtons = s.ups
+    v.FloorDownButtons = s.downs
+    v.InsideButtons = this.buttons
+    v.OtherLift = other.floor
+}
+
+func (s *simulator) scheduleLift(this, other *lift) {
+    var v View
+    var a Action
+
+    s.fillView(&v, this, other)
+    sched0.schedule(&v, &a)
+    this.saveAction(&a)
+}
+
+func (s *simulator) schedule() {
+    s.prepareButtons()
+    s.scheduleLift(&s.lifts[0], &s.lifts[1])
+    s.scheduleLift(&s.lifts[1], &s.lifts[0])
 }

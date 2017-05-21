@@ -65,3 +65,59 @@ func (l *lift) saveAction(a *Action) {
     l.action = a.Action
     l.direction = a.Direction
 }
+
+func (l *lift) printState(nfloor int) {
+    fmt.PrintInt(l.floor)
+    fmt.PrintStr(" ")
+
+    if l.doorOpen {
+        fmt.PrintStr("[ ] ")
+    } else {
+        fmt.PrintStr("[|] ")
+    }
+
+    if l.direction > 0 {
+        fmt.PrintStr("U")
+    } else if l.direction < 0 {
+        fmt.PrintStr("D")
+    } else {
+        fmt.PrintStr("-")
+    }
+
+    fmt.PrintStr(" ")
+
+    switch l.action {
+    case ActionNoop:
+        fmt.PrintStr("-")
+    case ActionOpenDoor:
+        fmt.PrintStr("O")
+    case ActionCloseDoor:
+        fmt.PrintStr("C")
+    case ActionUp:
+        fmt.PrintStr("U")
+    case ActionDown:
+        fmt.PrintStr("D")
+    default:
+        fmt.PrintStr("?")
+    }
+
+    fmt.PrintStr(" : ")
+
+    for i := 0; i < nfloor; i++ {
+        if l.buttons.Get(i) {
+            fmt.PrintInt(i)
+            fmt.PrintStr(" ")
+        }
+    }
+
+    if l.passengers != nil {
+        fmt.PrintStr(" : ")
+
+        fmt.PrintStr("(")
+        fmt.PrintInt(l.npassenger)
+        fmt.PrintStr(") ")
+
+        printPersons(l.passengers)
+
+    }
+}

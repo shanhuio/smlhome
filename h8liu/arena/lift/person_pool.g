@@ -11,9 +11,7 @@ func initPersonPool() {
 }
 
 func allocPerson() *person {
-    ret := removePerson(&pool)
-    ret.next = nil
-    return ret
+    return removePerson(&pool)
 }
 
 func freePerson(p *person) {

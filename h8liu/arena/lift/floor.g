@@ -11,6 +11,42 @@ func (f *floor) init(i int) {
     f.number = i
 }
 
+func (f *floor) printState() {
+    fmt.PrintStr("#")
+    fmt.PrintInt(f.number)
+    fmt.PrintStr(": ")
+    if f.buttonUp {
+        fmt.PrintStr("U")
+    } else {
+        fmt.PrintStr(" ")
+    }
+    if f.buttonDown {
+        fmt.PrintStr("D")
+    } else {
+        fmt.PrintStr(" ")
+    }
+
+    fmt.PrintStr("  ")
+    printPersons(f.queueUp)
+    fmt.PrintStr(" / ")
+    printPersons(f.queueDown)
+
+    if f.emerging != nil {
+        fmt.PrintStr(" (")
+        printPersons(f.emerging)
+        fmt.PrintStr(")")
+    }
+}
+
+func (f *floor) quiet() bool {
+    if f.queueUp != nil return false
+    if f.queueDown != nil return false
+    if f.emerging != nil return false
+    if !f.buttonUp return false
+    if !f.buttonDown return false
+    return true
+}
+
 func (f *floor) queue(direction int) **person {
     switch direction {
     case 1:
@@ -32,21 +68,23 @@ func (f *floor) add(dest int) {
     insertPerson(&f.emerging, p)
 }
 
-func (f *floor) emerge() {
-    upTail := tailPerson(f.queueUp)
-    downTail := tailPerson(f.queueDown)
+func (f *floor) update() {
+    upTail := tailPerson(&f.queueUp)
+    downTail := tailPerson(&f.queueDown)
     for f.emerging != nil {
         p := removePerson(&f.emerging)
         if p.dest > f.number {
-            upTail.next = p
-            upTail = p
+            *upTail = p
+            upTail = &p.next
         } else if p.dest < f.number {
-            downTail.next = p
-            downTail = p
+            *downTail = p
+            downTail = &p.next
         } else {
             freePerson(p)
         }
     }
+
+    f.pushButtons()
 }
 
 func (f *floor) popButton(direction int) {

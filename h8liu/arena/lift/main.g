@@ -15,11 +15,23 @@ Elevetor scheduling is a stepped game.
 var theSim simulator
 
 func main() {
+    rand.SysSeed()
+    initPersonPool()
+
     s := &theSim
     s.init(3)
 
-    for s.now() < 60 {
+    for s.now() < 120 {
+        fmt.PrintStr("T=")
+        fmt.PrintInt(s.now())
+        fmt.Println()
+
         s.addPersons()
+
+        s.printState()
+        fmt.PrintStr("-----")
+        fmt.Println()
+
         s.step()
         s.schedule()
     }
