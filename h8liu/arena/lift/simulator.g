@@ -84,6 +84,8 @@ func (s *simulator) step() {
     s.t++
 }
 
+var sched0, sched1 scheduler
+
 func (s *simulator) schedule() {
     var ups, downs Bitmap
     for i := 0; i < s.nfloor; i++ {
@@ -100,11 +102,16 @@ func (s *simulator) schedule() {
     v0.FloorDownButtons = downs
     v0.InsideButtons = s.lifts[0].buttons
     v0.OtherLift = s.lifts[1].floor
+    var a0 Action
+    sched0.schedule(&v0, &a0)
+    s.lifts[0].saveAction(&a0)
 
     var v1 View
     v1.FloorUpButtons = ups
     v1.FloorDownButtons = downs
     v1.InsideButtons = s.lifts[1].buttons
     v1.OtherLift = s.lifts[0].floor
-
+    var a1 Action
+    sched1.schedule(&v1, &a1)
+    s.lifts[1].saveAction(&a1)
 }

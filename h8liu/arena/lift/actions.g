@@ -5,3 +5,8 @@ const (
     ActionUp = 3
     ActionDown = 4
 )
+
+struct Action {
+    Action int
+    Direction int
+}

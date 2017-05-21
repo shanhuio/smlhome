@@ -60,3 +60,8 @@ func (l *lift) load(p *person) bool {
     l.npassenger++
     return true
 }
+
+func (l *lift) saveAction(a *Action) {
+    l.action = a.Action
+    l.direction = a.Direction
+}
