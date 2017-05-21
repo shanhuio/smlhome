@@ -56,7 +56,7 @@ func (l *lift) load(p *person) bool {
     if !l.doorOpen return false
     if l.full() return false
     insertPerson(&l.passengers, p)
-	l.buttons.Set(p.dest)
+    l.buttons.Set(p.dest)
     l.npassenger++
     return true
 }

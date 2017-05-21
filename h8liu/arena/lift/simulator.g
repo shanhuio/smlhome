@@ -85,26 +85,26 @@ func (s *simulator) step() {
 }
 
 func (s *simulator) schedule() {
-	var ups, downs Bitmap
-	for i := 0; i < s.nfloor; i++ {
-		if s.floors[i].buttonUp {
-			ups.Set(i)
-		}
-		if s.floors[i].buttonDown {
-			downs.Set(i)
-		}
-	}
-	
-	var v0 View
-	v0.FloorUpButtons = ups
-	v0.FloorDownButtons = downs
-	v0.InsideButtons = s.lifts[0].buttons
-	v0.OtherLift = s.lifts[1].floor
+    var ups, downs Bitmap
+    for i := 0; i < s.nfloor; i++ {
+        if s.floors[i].buttonUp {
+            ups.Set(i)
+        }
+        if s.floors[i].buttonDown {
+            downs.Set(i)
+        }
+    }
 
-	var v1 View
-	v1.FloorUpButtons = ups
-	v1.FloorDownButtons = downs
-	v1.InsideButtons = s.lifts[1].buttons
-	v1.OtherLift = s.lifts[0].floor
+    var v0 View
+    v0.FloorUpButtons = ups
+    v0.FloorDownButtons = downs
+    v0.InsideButtons = s.lifts[0].buttons
+    v0.OtherLift = s.lifts[1].floor
+
+    var v1 View
+    v1.FloorUpButtons = ups
+    v1.FloorDownButtons = downs
+    v1.InsideButtons = s.lifts[1].buttons
+    v1.OtherLift = s.lifts[0].floor
 
 }
