@@ -7,4 +7,4 @@ test:
 	sml -test=true
 
 fmt:
-	gfmt `find . -name *.g`
+	gfmt
