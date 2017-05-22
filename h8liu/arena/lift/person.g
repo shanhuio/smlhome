@@ -28,12 +28,45 @@ func tailPerson(p **person) **person {
     return p
 }
 
+func personLen(p *person) int {
+    ret := 0
+    for p != nil {
+        ret++
+        p = p.next
+    }
+    return ret
+}
+
 func printPersons(p *person) {
     if p == nil {
         fmt.PrintStr("-")
         return
     }
-    for ; p != nil; p = p.next {
+    for p != nil {
         fmt.PrintInt(p.dest)
+        p = p.next
     }
+}
+
+func TestPersonList() {
+    var p0, p1 person
+    p0.dest = 1
+    p1.dest = 2
+
+    var pt *person
+    assert(personLen(pt) == 0)
+
+    insertPerson(&pt, &p0)
+    assert(personLen(pt) == 1)
+    assert(pt == &p0)
+
+    tail := pt
+    assert(*tailPerson(&tail) == &p0)
+    assert(*tailPerson(&tail) == pt)
+
+    insertPerson(&pt, &p1)
+    assert(personLen(pt) == 2)
+    assert(pt == &p1)
+    tail = pt
+    assert(*tailPerson(&tail) == &p0)
 }

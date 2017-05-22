@@ -128,17 +128,17 @@ func (s *simulator) fillView(v *View, this, other *lift) {
     v.OtherLift = other.floor
 }
 
-func (s *simulator) scheduleLift(this, other *lift) {
+func (s *simulator) scheduleLift(sched *scheduler, this, other *lift) {
     var v View
     var a Action
 
     s.fillView(&v, this, other)
-    sched0.schedule(&v, &a)
+    sched.schedule(&v, &a)
     this.saveAction(&a)
 }
 
 func (s *simulator) schedule() {
     s.prepareButtons()
-    s.scheduleLift(&s.lifts[0], &s.lifts[1])
-    s.scheduleLift(&s.lifts[1], &s.lifts[0])
+    s.scheduleLift(&sched0, &s.lifts[0], &s.lifts[1])
+    s.scheduleLift(&sched1, &s.lifts[1], &s.lifts[0])
 }

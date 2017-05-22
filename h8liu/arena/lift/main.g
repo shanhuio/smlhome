@@ -21,7 +21,7 @@ func main() {
     s := &theSim
     s.init(3)
 
-    for s.now() < 120 {
+    for s.now() < 300 {
         fmt.PrintStr("T=")
         fmt.PrintInt(s.now())
         fmt.Println()

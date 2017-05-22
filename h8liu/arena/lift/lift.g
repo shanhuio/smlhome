@@ -43,7 +43,7 @@ func (l *lift) unload() {
             freePerson(out)
             l.npassenger--
         } else {
-            *pp = (*pp).next
+            pp = &((*pp).next)
         }
     }
 }
@@ -118,6 +118,5 @@ func (l *lift) printState(nfloor int) {
         fmt.PrintStr(") ")
 
         printPersons(l.passengers)
-
     }
 }

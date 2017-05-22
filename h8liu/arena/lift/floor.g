@@ -89,10 +89,10 @@ func (f *floor) update() {
 
 func (f *floor) popButton(direction int) {
     if direction == 0 return
-    if direction == 1 {
+    if direction > 0 {
         f.buttonUp = false
     }
-    if direction == 2 {
+    if direction < 0 {
         f.buttonDown = false
     }
 }

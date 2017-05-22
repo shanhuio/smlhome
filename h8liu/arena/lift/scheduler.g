@@ -3,8 +3,9 @@ struct scheduler {
 }
 
 func (s *scheduler) schedule(v *View, action *Action) {
-    highest := 0
-    lowest := v.Nfloor
+    cur := v.Current
+    highest := cur
+    lowest := cur
 
     if s.direction == 0 {
         s.direction = 1
@@ -24,24 +25,32 @@ func (s *scheduler) schedule(v *View, action *Action) {
         }
     }
 
-    cur := v.Current
     curUp := v.FloorUpButtons.Get(cur)
     curDown := v.FloorDownButtons.Get(cur)
 
     if s.direction > 0 {
-        if v.Current == highest && !curUp {
+        if cur == highest && !curUp {
             s.direction = -1
         }
     } else if s.direction < 0 {
-        if v.Current == lowest && !curDown {
+        if cur == lowest && !curDown {
             s.direction = 1
         }
     }
 
     action.Direction = s.direction
 
-    if curUp || curDown || v.InsideButtons.Get(cur) {
-        if !v.DoorOpen {
+    if !v.DoorOpen {
+        open := false
+        if v.InsideButtons.Get(cur) {
+            open = true
+        } else if s.direction > 0 && curUp {
+            open = true
+        } else if s.direction < 0 && curDown {
+            open = true
+        }
+
+        if open {
             action.Action = ActionOpenDoor
             return
         }

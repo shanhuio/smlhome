@@ -39,9 +39,11 @@ func shuffleLifts(l0, l1 *lift) (*lift, *lift) {
 func loadLifts(f *floor, l0, l1 *lift) {
     if !l1.doorOpen {
         loadLift(f, l0)
+        return
     }
     if !l0.doorOpen {
         loadLift(f, l1)
+        return
     }
     if l0.direction != l1.direction {
         loadLift(f, l0)
