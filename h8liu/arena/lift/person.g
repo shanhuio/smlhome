@@ -70,18 +70,18 @@ func TestPersonList() {
     tail = pt
     assert(*tailPerson(&tail) == &p0)
 
-	got := removePerson(&pt)
-	assert(got == &p1)
-	assert(got.next == nil)
-	assert(pt == &p0)
-	tail = pt
-	assert(personLen(pt) == 1)
-	assert(*tailPerson(&tail) == &p0)
+    got := removePerson(&pt)
+    assert(got == &p1)
+    assert(got.next == nil)
+    assert(pt == &p0)
+    tail = pt
+    assert(personLen(pt) == 1)
+    assert(*tailPerson(&tail) == &p0)
 
-	got = removePerson(&pt)
-	assert(got == &p0)
-	assert(got.next == nil)
-	assert(pt == nil)
-	assert(personLen(pt) == 0)
-	assert(*tailPerson(&pt) == nil)
+    got = removePerson(&pt)
+    assert(got == &p0)
+    assert(got.next == nil)
+    assert(pt == nil)
+    assert(personLen(pt) == 0)
+    assert(*tailPerson(&pt) == nil)
 }
