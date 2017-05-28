@@ -12,29 +12,30 @@ func (f *floor) init(i int) {
 }
 
 func (f *floor) printState() {
-    fmt.PrintStr("#")
-    fmt.PrintInt(f.number)
-    fmt.PrintStr(": ")
+    terminal.PrintStr("#")
+
+    terminal.PrintInt(f.number)
+    terminal.PrintStr(": ")
     if f.buttonUp {
-        fmt.PrintStr("U")
+        terminal.PrintStr("U")
     } else {
-        fmt.PrintStr(" ")
+        terminal.PrintStr(" ")
     }
     if f.buttonDown {
-        fmt.PrintStr("D")
+        terminal.PrintStr("D")
     } else {
-        fmt.PrintStr(" ")
+        terminal.PrintStr(" ")
     }
 
-    fmt.PrintStr("  ")
+    terminal.PrintStr("  ")
     printPersons(f.queueUp)
-    fmt.PrintStr(" / ")
+    terminal.PrintStr(" / ")
     printPersons(f.queueDown)
 
     if f.emerging != nil {
-        fmt.PrintStr(" (")
+        terminal.PrintStr(" (")
         printPersons(f.emerging)
-        fmt.PrintStr(")")
+        terminal.PrintStr(")")
     }
 }
 

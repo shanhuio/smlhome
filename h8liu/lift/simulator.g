@@ -54,16 +54,16 @@ func (s *simulator) printState() {
         f := &s.floors[i]
         if f.quiet() continue
         f.printState()
-        fmt.Println()
+        terminal.PrintStr("\n")
     }
 
-    fmt.PrintStr("L0: ")
+    terminal.PrintStr("L0: ")
     s.lifts[0].printState(s.nfloor)
-    fmt.Println()
+    terminal.PrintStr("\n")
 
-    fmt.PrintStr("L1: ")
+    terminal.PrintStr("L1: ")
     s.lifts[1].printState(s.nfloor)
-    fmt.Println()
+    terminal.PrintStr("\n")
 }
 
 func (s *simulator) step() {

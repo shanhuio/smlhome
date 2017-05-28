@@ -1,4 +1,4 @@
 import (
-    "fmt"
     "rand"
+    "terminal"
 )

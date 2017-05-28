@@ -31,15 +31,16 @@ func main() {
     s.init(3)
 
     for s.now() < 300 {
-        fmt.PrintStr("T=")
-        fmt.PrintInt(s.now())
-        fmt.Println()
+        terminal.Clear()
+        terminal.PrintStr("T=")
+        terminal.PrintInt(s.now())
+        terminal.PrintStr("\n")
 
         s.addPersons()
 
         s.printState()
-        fmt.PrintStr("-----")
-        fmt.Println()
+        terminal.PrintStr("-----")
+        terminal.PrintStr("\n")
 
         s.step()
         s.schedule()

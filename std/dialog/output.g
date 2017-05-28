@@ -1,18 +1,8 @@
-var msgBuf [1500]byte
-
-var msgPacket vpc.Packet
-
 const (
     cmdSay = 0
     cmdChoice = 1
     cmdWaitChoice = 2
 )
-
-func prepare() *vpc.Packet {
-    p := &msgPacket
-    p.Init(msgBuf[:])
-    return p
-}
 
 func call(p *vpc.Packet, n int) {
     var h vpc.PacketHeader
@@ -24,7 +14,7 @@ func call(p *vpc.Packet, n int) {
 // Say sends a message to the client
 func Say(msg string) {
     var enc coder.Encoder
-    p := prepare()
+    p := vpc.PreparePacket()
     p.PayloadCoder(&enc)
     enc.U8(cmdSay)
     enc.I32(len(msg))
@@ -35,7 +25,7 @@ func Say(msg string) {
 // Choose asks for a choice among several options. Returns -1 when timeout.
 func Choose(choices []string, sec int) int {
     var enc coder.Encoder
-    p := prepare()
+    p := vpc.PreparePacket()
 
     n := len(choices)
     for i := 0; i < n; i++ {

@@ -67,55 +67,55 @@ func (l *lift) saveAction(a *Action) {
 }
 
 func (l *lift) printState(nfloor int) {
-    fmt.PrintInt(l.floor)
-    fmt.PrintStr(" ")
+    terminal.PrintInt(l.floor)
+    terminal.PrintStr(" ")
 
     if l.doorOpen {
-        fmt.PrintStr("[ ] ")
+        terminal.PrintStr("[ ] ")
     } else {
-        fmt.PrintStr("[|] ")
+        terminal.PrintStr("[|] ")
     }
 
     if l.direction > 0 {
-        fmt.PrintStr("U")
+        terminal.PrintStr("U")
     } else if l.direction < 0 {
-        fmt.PrintStr("D")
+        terminal.PrintStr("D")
     } else {
-        fmt.PrintStr("-")
+        terminal.PrintStr("-")
     }
 
-    fmt.PrintStr(" ")
+    terminal.PrintStr(" ")
 
     switch l.action {
     case ActionNoop:
-        fmt.PrintStr("-")
+        terminal.PrintStr("-")
     case ActionOpenDoor:
-        fmt.PrintStr("O")
+        terminal.PrintStr("O")
     case ActionCloseDoor:
-        fmt.PrintStr("C")
+        terminal.PrintStr("C")
     case ActionUp:
-        fmt.PrintStr("U")
+        terminal.PrintStr("U")
     case ActionDown:
-        fmt.PrintStr("D")
+        terminal.PrintStr("D")
     default:
-        fmt.PrintStr("?")
+        terminal.PrintStr("?")
     }
 
-    fmt.PrintStr(" : ")
+    terminal.PrintStr(" : ")
 
     for i := 0; i < nfloor; i++ {
         if l.buttons.Get(i) {
-            fmt.PrintInt(i)
-            fmt.PrintStr(" ")
+            terminal.PrintInt(i)
+            terminal.PrintStr(" ")
         }
     }
 
     if l.passengers != nil {
-        fmt.PrintStr(" : ")
+        terminal.PrintStr(" : ")
 
-        fmt.PrintStr("(")
-        fmt.PrintInt(l.npassenger)
-        fmt.PrintStr(") ")
+        terminal.PrintStr("(")
+        terminal.PrintInt(l.npassenger)
+        terminal.PrintStr(") ")
 
         printPersons(l.passengers)
     }

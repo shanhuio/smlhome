@@ -4,6 +4,7 @@ const PacketHeaderLen = 16
 const (
     PortDialog = 1001
     PortTable = 1002
+    PortTerminal = 1003
 )
 
 struct Packet {
@@ -46,4 +47,14 @@ func (p *Packet) SetHeader(h *PacketHeader, n int) {
 
 func Send(p *Packet, n int) int {
     return sendPacket(p.buf[:PacketHeaderLen + n])
+}
+
+var packetBuf [1300]byte
+
+var thePacket Packet
+
+func PreparePacket() *Packet {
+    p := &thePacket
+    p.Init(packetBuf[:])
+    return p
 }

@@ -76,17 +76,12 @@ func (t *table) render() {
         t.buttons[i].render()
     }
 
-    // update divs
-    var enc coder.Encoder
-    enc.Init(msgBuf[:])
-    enc.U8(divUpdate)
-
     i = 0
     for {
         index, ok := t.dirtyDivs.iter(&i)
         if !ok break
 
-        p := prepare()
+        p := vpc.PreparePacket()
         var enc coder.Encoder
         p.PayloadCoder(&enc)
         enc.U8(divUpdate)

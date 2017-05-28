@@ -39,11 +39,13 @@ func personLen(p *person) int {
 
 func printPersons(p *person) {
     if p == nil {
-        fmt.PrintStr("-")
+        terminal.PrintStr("-")
         return
     }
+
     for p != nil {
-        fmt.PrintInt(p.dest)
+        terminal.PrintInt(p.dest)
+
         p = p.next
     }
 }
