@@ -30,6 +30,30 @@ func Resize(nline, ncol int) {
     call(p, enc.Len())
 }
 
+func SetUseShadow(b bool) {
+    var enc coder.Encoder
+    p := vpc.PreparePacket()
+    p.PayloadCoder(&enc)
+
+    enc.U8(3)
+    if b {
+        enc.U8(1)
+    } else {
+        enc.U8(0)
+    }
+
+    call(p, enc.Len())
+}
+
+func Commit() {
+    var enc coder.Encoder
+    p := vpc.PreparePacket()
+    p.PayloadCoder(&enc)
+
+    enc.U8(4)
+    call(p, enc.Len())
+}
+
 func Clear() {
     var enc coder.Encoder
     p := vpc.PreparePacket()

@@ -28,21 +28,19 @@ func main() {
     initPersonPool()
 
     s := &theSim
-    s.init(3)
+    s.init(5)
+
+    terminal.SetUseShadow(true)
 
     for s.now() < 300 {
-        terminal.Clear()
-        terminal.PrintStr("T=")
-        terminal.PrintInt(s.now())
-        terminal.PrintStr("\n")
-
         s.addPersons()
 
+        terminal.Clear()
         s.printState()
-        terminal.PrintStr("-----")
-        terminal.PrintStr("\n")
 
         s.step()
         s.schedule()
+
+        terminal.Commit()
     }
 }

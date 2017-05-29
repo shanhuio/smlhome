@@ -50,12 +50,32 @@ func (s *simulator) now() int {
 }
 
 func (s *simulator) printState() {
+    terminal.PrintStr("T=")
+    terminal.PrintInt(s.now())
+    terminal.PrintStr("\n\n")
+
     for i := s.nfloor - 1; i >= 0; i-- {
         f := &s.floors[i]
-        if f.quiet() continue
+
+        if s.lifts[0].floor == i {
+            terminal.PrintStr(" L0")
+        } else {
+            terminal.PrintStr("   ")
+        }
+
+        if s.lifts[1].floor == i {
+            terminal.PrintStr(" L1")
+        } else {
+            terminal.PrintStr("   ")
+        }
+
+        terminal.PrintStr("  ")
+
         f.printState()
         terminal.PrintStr("\n")
     }
+
+    terminal.PrintStr("\n")
 
     terminal.PrintStr("L0: ")
     s.lifts[0].printState(s.nfloor)
