@@ -7,8 +7,6 @@ system.
 [1]: https://golang.org/
 [2]: http://webassembly.org/
 
-----
-
 ## Web Assembly
 
 [Web Assembly][1] is essentially a new binary executable format that is
@@ -78,8 +76,6 @@ One nice thing of following these rules: it enables visualizing the project
 structure into [figures like this][6] for easier code navigation.
 
 [6]: https://shanhu.io/smlvm
-
-----
 
 Even for a custom small language, this project is still fairly complicated 
 and will take a lot of time to finish. In fact, when it is eventually
