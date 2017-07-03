@@ -8,7 +8,7 @@
             { "Dir": "yumuzi234" }
         ]
     },
-    "s0": {
+    "sr": {
         "Host": "https://smallrepo.com",
         "Mirrors": [
             { "Dir": "std" },
