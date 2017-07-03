@@ -7,16 +7,17 @@ system.
 [1]: https://golang.org/
 [2]: http://webassembly.org/
 
+----
+
 ## Web Assembly
 
 [Web Assembly][1] is essentially a new binary executable format that is
 going to be supported by most of the popular browsers. This not only enables
-native performance Web applications that runs instantly without explicit 
-installations, but also provides a chance for Web developers to use more
-advanced compilers and better software development procedures, which are 
-critical to develop large applications. Therefore, I think Web Assembly is
-a very cool idea, which might eventually evolve into a brand new meta for
-the online world. I am excited.
+Web applications with native performance, but also provides a chance for Web
+developers to use more advanced compilers and better software development 
+procedures, which are critical to develop large applications. Therefore, 
+I think Web Assembly is a very cool idea, which might eventually evolve into
+a brand new meta for the online world. I am excited about it.
 
 Because Web Assembly is relatively new, only several languages support it now.
 The big ones are C, C++, and [Rust][3]. It will be fun to add some more into
@@ -38,7 +39,7 @@ this tech blog for compiling and running G language programs.
 However, it currently compiles to a small virtual machine instruction set
 rather than Web Assembly, so the performance is horrible.
 
-In short, I have two goals:
+Here is the plan to make it better:
 
 - Translate the existing [G language compiler][5] from Go to G, so that the
 compiler becomes self hosting.
@@ -50,16 +51,13 @@ tracks the discussion on building a Web Assembly backend for Go language.)
 [4]: https://github.com/golang/go/issues/18892
 [5]: https://github.com/shanhuio/smlvm/
 
-## A Coding Show
+## Coding Rules
 
-I want to make this journey a show of coding, and hence it is important for the
-show followers to understand the code that I am writing. For that, this tech
-blog will also serve as a code repository that stores and compiles all the G
-language code that I write for this project, where visitors can easily
-read and run the code right inside the browser.
+I will share the building procedure of this project on this blog, which also
+serves as a code repository that stores and compiles all the G language code.
 
-Furthermore, to make sure that the high level project structure can be clearly
-presented, the project will follow two basic rules:
+Furthermore, to make it easier for readers to understand the code,
+I set two rules:
 
 1. No file can be more than 300 lines, where each line has maximum 80 
    characters.
@@ -70,6 +68,24 @@ comprehensible units. For example, it make sure that there is no function body
 or type definition in the project that has more than 300 lines.
 
 The second rule makes sure that the small project units are organized in
-multiple layers rather than a pile of huge monolithic spaghetti-like blob.
+structured abstraction layers, rather than a pile of huge monolithic
+spaghetti-like blob.
 
+These two rules are enforced by the compiler. The compiler will fail with
+compile time errors if either of them is not satisfied.
 
+One nice thing of following these rules: it enables visualizing the project
+structure into [figures like this][6] for easier code navigation.
+
+[6]: https://shanhu.io/smlvm
+
+----
+
+Even for a custom small language, this project is still fairly complicated 
+and will take a lot of time to finish. In fact, when it is eventually
+finished, I am not sure if Web Assembly will still be a thing. However, 
+what makes this interesting for me is not just the end results, but also
+the procedure of building it, and sharing this experience online with all
+types of hackers, friends and strangers.
+
+I am super excited.
