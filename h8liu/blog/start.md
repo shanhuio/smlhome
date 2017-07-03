@@ -7,6 +7,8 @@ system.
 [1]: https://golang.org/
 [2]: http://webassembly.org/
 
+----
+
 ## Web Assembly
 
 [Web Assembly][1] is essentially a new binary executable format that is
