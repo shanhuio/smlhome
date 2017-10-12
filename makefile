@@ -1,10 +1,10 @@
 .PHONY: all fmt
 
 all:
-	sml -test=false
+	smlg -test=false
 
 test:
-	sml -test=true
+	smlg -test=true
 
 fmt:
 	gfmt
