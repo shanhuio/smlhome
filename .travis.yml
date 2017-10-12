@@ -5,7 +5,7 @@ go:
     - 1.7
 
 install:
-    - go get shanhu.io/smlvm/cmd/sml
+    - go get shanhu.io/smlvm/cmd/smlg
 
 script:
-    - sml -test=true
+    - smlg -test=true
